@@ -1,0 +1,5354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <title>CB 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #5b2a9e;
+        --purple-dk: #402072;
+        --navy: #1b1f3b;
+        --orange: #ee6c4d;
+        --bg: #faf6f0;
+        --card: #ffffff;
+        --text: #2a241c;
+        --muted: #7a7263;
+        --line: #ebe2d3;
+        --success: #3d9a6b;
+        --danger: #c4485b;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #1b1712;
+          --card: #25201a;
+          --text: #f3ede3;
+          --muted: #b8ad9b;
+          --line: #3a3226;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #1b1712;
+        --card: #25201a;
+        --text: #f3ede3;
+        --muted: #b8ad9b;
+        --line: #3a3226;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.001s !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001s !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+        height: 100%;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        height: 100dvh;
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          "Nunito",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        display: flex;
+        justify-content: center;
+      }
+      h1,
+      .new-chat-btn,
+      .sugg-pill,
+      #send,
+      .mode-btn {
+        font-family:
+          "Quicksand",
+          "Nunito",
+          -apple-system,
+          sans-serif;
+      }
+      @media (min-width: 560px) {
+        body {
+          background:
+            radial-gradient(
+              circle at 30% 20%,
+              rgba(91, 42, 158, 0.1),
+              transparent 55%
+            ),
+            radial-gradient(
+              circle at 80% 85%,
+              rgba(238, 108, 77, 0.09),
+              transparent 50%
+            ),
+            var(--bg);
+        }
+      }
+      #app {
+        width: 100%;
+        max-width: min(480px, 100vw);
+        height: 100dvh;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        position: relative;
+        container-type: inline-size;
+        container-name: app;
+      }
+      @media (min-width: 560px) {
+        #app {
+          max-width: clamp(420px, 45vw, 520px);
+          margin: 22px 0;
+          height: calc(100dvh - 44px);
+          height: calc(100% - 44px);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow:
+            0 20px 60px rgba(20, 10, 40, 0.18),
+            0 2px 8px rgba(20, 10, 40, 0.08);
+          border: 1px solid var(--line);
+        }
+      }
+      @media (max-height: 480px) and (orientation: landscape) {
+        header {
+          padding: 7px 14px;
+        }
+        .empty-hint {
+          display: none;
+        }
+        #inputbar {
+          padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px));
+        }
+        #log {
+          padding-top: 10px;
+        }
+      }
+      #log {
+        scroll-behavior: smooth;
+      }
+      #log::-webkit-scrollbar {
+        width: 6px;
+      }
+      #log::-webkit-scrollbar-thumb {
+        background: var(--line);
+        border-radius: 10px;
+      }
+      #log::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      header {
+        background: linear-gradient(
+          120deg,
+          var(--navy) 0%,
+          var(--purple-dk) 55%,
+          var(--purple) 100%
+        );
+        color: #fff;
+        padding: clamp(10px, 3.2cqw, 14px) clamp(12px, 4cqw, 16px);
+        padding-top: calc(
+          clamp(10px, 3.2cqw, 14px) + env(safe-area-inset-top, 0px)
+        );
+        display: flex;
+        align-items: center;
+        gap: clamp(8px, 2.6cqw, 11px);
+        flex-shrink: 0;
+        box-shadow: 0 3px 14px color-mix(in srgb, var(--navy) 45%, transparent);
+        position: relative;
+        overflow: hidden;
+      }
+      header::after {
+        content: "";
+        position: absolute;
+        right: -30px;
+        top: -40px;
+        width: 130px;
+        height: 130px;
+        background: radial-gradient(circle, var(--orange) 0%, transparent 70%);
+        opacity: 0.35;
+        pointer-events: none;
+      }
+      .logo-mark {
+        width: clamp(32px, 9.5cqw, 40px);
+        height: clamp(32px, 9.5cqw, 40px);
+        flex-shrink: 0;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+        z-index: 1;
+      }
+      .htext {
+        z-index: 1;
+        flex: 1;
+        min-width: 0;
+      }
+      header h1 {
+        font-size: clamp(14.5px, 4.4cqw, 17px);
+        margin: 0;
+        letter-spacing: 0.2px;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: clamp(9px, 2.6cqw, 10px);
+        opacity: 0.85;
+        margin-top: 2px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .status i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #3ddc84;
+        box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6);
+        animation: pulse 1.8s infinite;
+        flex-shrink: 0;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.55);
+        }
+        70% {
+          box-shadow: 0 0 0 6px rgba(61, 220, 132, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(61, 220, 132, 0);
+        }
+      }
+      header p {
+        margin: 2px 0 0;
+        font-size: 10.5px;
+        opacity: 0.9;
+        font-style: italic;
+        letter-spacing: 0.2px;
+      }
+      #reset {
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+          background 0.15s,
+          transform 0.1s;
+      }
+      #reset:hover {
+        background: rgba(255, 255, 255, 0.24);
+      }
+      #reset:active {
+        transform: scale(0.92);
+      }
+      .header-actions {
+        display: flex;
+        gap: clamp(6px, 2cqw, 8px);
+        z-index: 1;
+        flex-shrink: 0;
+      }
+      .icon-btn {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        width: clamp(28px, 8cqw, 32px);
+        height: clamp(28px, 8cqw, 32px);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+          background 0.15s,
+          transform 0.1s;
+      }
+      .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.24);
+      }
+      .icon-btn:active {
+        transform: scale(0.92);
+      }
+      .icon-btn.signed {
+        background: rgba(61, 220, 132, 0.32);
+        border-color: rgba(61, 220, 132, 0.55);
+      }
+      .logo-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+        z-index: 1;
+        border-radius: 10px;
+        transition: transform 0.12s;
+      }
+      .logo-btn:hover {
+        transform: scale(1.06);
+      }
+      .logo-btn:active {
+        transform: scale(0.94);
+      }
+      .theme-panel,
+      .chat-panel {
+        position: absolute;
+        top: 60px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(20, 10, 40, 0.2);
+        padding: 12px;
+        z-index: 30;
+        width: min(196px, calc(100cqw - 24px));
+        display: none;
+        animation: pop 0.15s ease;
+      }
+      .theme-panel {
+        right: 12px;
+      }
+      .chat-panel {
+        left: 12px;
+        width: min(220px, calc(100cqw - 24px));
+        max-height: min(340px, 65vh);
+        flex-direction: column;
+      }
+      .theme-panel.open {
+        display: block;
+      }
+      .chat-panel.open {
+        display: flex;
+      }
+      .theme-panel h4 {
+        margin: 0 0 8px;
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--muted);
+        font-weight: 800;
+      }
+      .mode-row {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 14px;
+      }
+      .mode-btn {
+        flex: 1;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--text);
+        border-radius: 9px;
+        padding: 7px 0;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .mode-btn.active {
+        background: var(--purple);
+        border-color: var(--purple);
+        color: #fff;
+      }
+      .swatch-row {
+        display: flex;
+        gap: 9px;
+      }
+      .swatch {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid transparent;
+        position: relative;
+        flex-shrink: 0;
+        padding: 0;
+        transition: transform 0.12s;
+      }
+      .swatch:hover {
+        transform: scale(1.1);
+      }
+      .swatch.active {
+        border-color: var(--text);
+      }
+      .swatch.active::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+      }
+      .new-chat-btn {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--purple);
+        color: #fff;
+        border: none;
+        border-radius: 9px;
+        padding: 8px 10px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 8px;
+        text-align: left;
+        transition: opacity 0.15s;
+        flex-shrink: 0;
+      }
+      .new-chat-btn:hover {
+        opacity: 0.88;
+      }
+      .chat-list {
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .chat-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 7px 6px 7px 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--text);
+        transition: background 0.15s;
+      }
+      .chat-item:hover {
+        background: var(--bg);
+      }
+      .chat-item.active {
+        background: var(--bg);
+        font-weight: 700;
+        color: var(--purple-dk);
+      }
+      :root[data-theme="dark"] .chat-item.active {
+        color: #c9a6ff;
+      }
+      .chat-item .ci-title {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .chat-item .ci-del {
+        opacity: 0;
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        padding: 3px 5px;
+        border-radius: 5px;
+        transition: opacity 0.15s;
+      }
+      .chat-item:hover .ci-del {
+        opacity: 1;
+      }
+      .chat-item .ci-del:hover {
+        background: var(--line);
+        color: var(--text);
+      }
+      .chat-empty {
+        font-size: 11.5px;
+        color: var(--muted);
+        padding: 6px 4px;
+      }
+      .chat-search {
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 7px 10px;
+        font-size: 12px;
+        background: var(--bg);
+        color: var(--text);
+        margin-bottom: 8px;
+        font-family: inherit;
+        outline: none;
+        flex-shrink: 0;
+      }
+      .chat-search:focus {
+        border-color: var(--purple);
+      }
+      #log {
+        flex: 1;
+        overflow-y: auto;
+        padding: clamp(12px, 4cqw, 16px) clamp(9px, 3cqw, 12px) 6px;
+        display: flex;
+        flex-direction: column;
+        gap: clamp(9px, 2.8cqw, 12px);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        animation: pop 0.18s ease;
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .row.user {
+        justify-content: flex-end;
+      }
+      .avatar {
+        width: clamp(22px, 6.5cqw, 26px);
+        height: clamp(22px, 6.5cqw, 26px);
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--purple), var(--orange));
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(9.5px, 2.8cqw, 11px);
+        font-weight: 800;
+        color: #fff;
+        box-shadow: 0 2px 5px color-mix(in srgb, var(--purple) 40%, transparent);
+      }
+      .avatar.spacer {
+        visibility: hidden;
+      }
+      .msg {
+        max-width: 80%;
+        padding: clamp(8px, 2.6cqw, 10px) clamp(10px, 3.2cqw, 13px);
+        border-radius: 16px;
+        font-size: clamp(12.8px, 3.6cqw, 14px);
+        line-height: 1.5;
+        box-shadow: 0 1px 2px rgba(20, 10, 40, 0.05);
+        transition: box-shadow 0.15s;
+        word-break: break-word;
+      }
+      .bot {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-bottom-left-radius: 5px;
+      }
+      .user {
+        background: linear-gradient(120deg, var(--purple), var(--purple-dk));
+        color: #fff;
+        border-bottom-right-radius: 5px;
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--purple) 32%, transparent);
+      }
+      .bot b {
+        color: var(--purple-dk);
+      }
+      @media (prefers-color-scheme: dark) {
+        .bot b {
+          color: #c9a6ff;
+        }
+      }
+      :root[data-theme="dark"] .bot b {
+        color: #c9a6ff;
+      }
+      .cat-tag {
+        display: inline-block;
+        font-size: 9.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #fff;
+        background: var(--orange);
+        padding: 2px 8px;
+        border-radius: 6px;
+        margin-bottom: 6px;
+      }
+      .typing {
+        display: flex;
+        gap: 4px;
+        padding: 12px 14px;
+      }
+      .typing span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--muted);
+        animation: blink 1.2s infinite;
+      }
+      .typing span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes blink {
+        0%,
+        80%,
+        100% {
+          opacity: 0.25;
+        }
+        40% {
+          opacity: 1;
+        }
+      }
+      .suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        padding-left: 34px;
+        animation: pop 0.2s ease;
+      }
+      .sugg-pill {
+        background: var(--card);
+        border: 1px solid var(--purple);
+        color: var(--purple-dk);
+        font-size: clamp(11px, 3cqw, 12px);
+        font-weight: 600;
+        padding: clamp(5px, 1.8cqw, 6px) clamp(10px, 3cqw, 12px);
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        box-shadow: 0 1px 3px rgba(20, 10, 40, 0.05);
+      }
+      :root[data-theme="dark"] .sugg-pill {
+        color: #d8c4ff;
+      }
+      .sugg-pill:hover {
+        background: var(--purple);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px color-mix(in srgb, var(--purple) 38%, transparent);
+      }
+      .sugg-pill:active {
+        transform: scale(0.96);
+      }
+      #inputbar {
+        display: flex;
+        gap: 8px;
+        padding: clamp(8px, 2.6cqw, 10px) clamp(9px, 3cqw, 12px)
+          calc(clamp(8px, 2.6cqw, 10px) + env(safe-area-inset-bottom, 0px));
+        background: var(--card);
+        border-top: 1px solid var(--line);
+        flex-shrink: 0;
+        box-shadow: 0 -2px 10px rgba(20, 10, 40, 0.04);
+      }
+      #q {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: clamp(9px, 2.8cqw, 11px) clamp(13px, 4cqw, 16px);
+        font-size: clamp(13px, 3.6cqw, 14px);
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      #q:focus {
+        border-color: var(--purple);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple) 18%, transparent);
+      }
+      #send {
+        background: linear-gradient(120deg, var(--orange), var(--purple-dk));
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: clamp(36px, 10cqw, 42px);
+        height: clamp(36px, 10cqw, 42px);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--orange) 45%, transparent);
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s;
+      }
+      #send svg {
+        width: clamp(15px, 4.2cqw, 18px);
+        height: clamp(15px, 4.2cqw, 18px);
+        transform: translateX(1px);
+      }
+      #send:hover {
+        box-shadow: 0 3px 12px
+          color-mix(in srgb, var(--orange) 55%, transparent);
+      }
+      #send:active {
+        transform: scale(0.9);
+      }
+      .empty-hint {
+        font-size: clamp(10px, 2.8cqw, 11.5px);
+        color: var(--muted);
+        text-align: center;
+        padding: 5px 8px 0;
+      }
+      #q:disabled,
+      #send:disabled {
+        opacity: 0.45;
+        cursor: default;
+        box-shadow: none;
+      }
+      .feedback {
+        display: flex;
+        gap: 2px;
+        align-items: center;
+        padding-left: 34px;
+        margin-top: -6px;
+      }
+      .fb-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 12.5px;
+        opacity: 0.45;
+        padding: 3px 6px;
+        border-radius: 7px;
+        transition:
+          opacity 0.15s,
+          background 0.15s;
+      }
+      .fb-btn:hover {
+        opacity: 0.9;
+      }
+      .fb-btn.sel {
+        opacity: 1;
+        background: var(--line);
+      }
+      .fb-note {
+        font-size: 11px;
+        color: var(--muted);
+        margin-left: 2px;
+      }
+      .msg.streaming::after {
+        content: "▍";
+        animation: blink 1s infinite;
+        color: var(--purple);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 2px solid var(--purple);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .icon-btn:focus-visible,
+      .logo-btn:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+      .auth-form input.invalid {
+        border-color: var(--danger);
+      }
+      .home-label {
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--muted);
+        padding-left: 34px;
+        margin: 4px 0 1px;
+      }
+      .home-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(126px, 1fr));
+        gap: 8px;
+        padding-left: 34px;
+        margin-bottom: 2px;
+      }
+      .jcard {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px 11px;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          border-color 0.15s;
+        font-family: inherit;
+      }
+      .jcard:hover {
+        border-color: var(--purple);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px
+          color-mix(in srgb, var(--purple) 22%, transparent);
+      }
+      .jcard:active {
+        transform: translateY(0) scale(0.98);
+      }
+      .jc-icon {
+        font-size: 17px;
+      }
+      .jc-title {
+        font-weight: 800;
+        font-size: 12.5px;
+        font-family: "Quicksand", "Nunito", sans-serif;
+        color: var(--text);
+      }
+      .jc-desc {
+        font-size: 10px;
+        color: var(--muted);
+        line-height: 1.3;
+      }
+      .next-steps {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 2px 8px 4px 34px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .next-steps::-webkit-scrollbar {
+        display: none;
+      }
+      .step-chip {
+        flex-shrink: 0;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        white-space: nowrap;
+        font-family: inherit;
+        transition:
+          border-color 0.15s,
+          color 0.15s;
+      }
+      .step-chip:hover {
+        border-color: var(--purple);
+        color: var(--purple-dk);
+      }
+      .fb-reasons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 6px;
+        padding-left: 34px;
+      }
+      .fb-reason {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 10.5px;
+        cursor: pointer;
+        color: var(--text);
+        font-family: inherit;
+      }
+      .fb-reason:hover {
+        border-color: var(--purple);
+        color: var(--purple-dk);
+      }
+      .msg ul,
+      .msg ol {
+        margin: 5px 0;
+        padding-left: 19px;
+      }
+      .msg li {
+        margin: 2px 0;
+      }
+      .dash-wrap {
+        padding-left: 34px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 2px;
+        max-width: 88%;
+      }
+      .dash-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 11px 13px;
+      }
+      .dash-head {
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .progress-track {
+        display: flex;
+        align-items: flex-start;
+        gap: 2px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .progress-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        flex: 1;
+        min-width: 44px;
+        background: none;
+        border: none;
+        font-family: inherit;
+        padding: 2px;
+      }
+      .progress-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 2px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        transition: all 0.15s;
+      }
+      .progress-node.done .progress-dot {
+        background: var(--purple);
+        border-color: var(--purple);
+        color: #fff;
+      }
+      .progress-node.current .progress-dot {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 28%, transparent);
+      }
+      .progress-label {
+        font-size: 9px;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.15;
+      }
+      .progress-node.current .progress-label {
+        color: var(--text);
+        font-weight: 700;
+      }
+      .dash-card {
+        margin-left: 34px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-width: 84%;
+      }
+      .dash-title {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+      }
+      .dash-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        padding: 2px 0;
+        cursor: pointer;
+      }
+      .dash-row b {
+        font-weight: 700;
+        color: var(--text);
+        font-family: "Quicksand", "Nunito", sans-serif;
+      }
+      .dash-row span {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .dash-streams,
+      .dash-progress,
+      .dash-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .dash-stage-active {
+        background: var(--purple) !important;
+        border-color: var(--purple) !important;
+        color: #fff !important;
+      }
+      .dash-note {
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--bg);
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .auth-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 100;
+        background: color-mix(in srgb, var(--navy) 55%, transparent);
+        backdrop-filter: blur(3px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .auth-overlay.open {
+        display: flex;
+      }
+      .auth-card {
+        background: var(--card);
+        border-radius: 18px;
+        padding: clamp(18px, 5cqw, 22px) clamp(16px, 4.5cqw, 20px);
+        width: min(300px, calc(100cqw - 40px));
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+      .auth-card h2 {
+        margin: 0 0 4px;
+        font-size: 16.5px;
+        font-family: "Quicksand", "Nunito", sans-serif;
+        color: var(--text);
+      }
+      .auth-sub {
+        margin: 0 0 14px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .auth-tabs {
+        display: flex;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 3px;
+        margin-bottom: 14px;
+      }
+      .auth-tab {
+        flex: 1;
+        border: none;
+        background: none;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 12.5px;
+        padding: 7px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .auth-tab.active {
+        background: var(--purple);
+        color: #fff;
+      }
+      .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .auth-form input {
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 10px 12px;
+        font-size: 13.5px;
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        font-family: inherit;
+        transition: border-color 0.15s;
+      }
+      .auth-form input:focus {
+        border-color: var(--purple);
+      }
+      .auth-submit {
+        background: linear-gradient(120deg, var(--purple), var(--purple-dk));
+        color: #fff;
+        border: none;
+        border-radius: 11px;
+        padding: 10px 0;
+        font-weight: 800;
+        font-size: 13.5px;
+        cursor: pointer;
+        font-family: "Quicksand", "Nunito", sans-serif;
+        transition: opacity 0.15s;
+      }
+      .auth-submit:hover {
+        opacity: 0.9;
+      }
+      .auth-error {
+        min-height: 15px;
+        color: var(--danger);
+        font-size: 11.5px;
+        margin-top: 9px;
+      }
+      .auth-note {
+        margin: 6px 0 0;
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .account-footer {
+        margin-top: 10px;
+        padding-top: 9px;
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .account-footer b {
+        color: var(--text);
+      }
+      .linklike {
+        background: none;
+        border: none;
+        color: var(--purple);
+        font-weight: 700;
+        font-size: 11px;
+        cursor: pointer;
+        padding: 0;
+        font-family: inherit;
+      }
+      .linklike:hover {
+        text-decoration: underline;
+      }
+      #sidebar,
+      #contextPanel {
+        display: none;
+      }
+      @media (min-width: 900px) {
+        body {
+          gap: 16px;
+        }
+        #sidebar {
+          display: flex;
+          flex-direction: column;
+          width: 206px;
+          height: calc(100dvh - 44px);
+          margin: 22px 0;
+          background: var(--card);
+          border: 1px solid var(--line);
+          border-radius: 20px;
+          padding: 16px 12px;
+          gap: 2px;
+          box-shadow: 0 10px 30px rgba(20, 10, 40, 0.08);
+          flex-shrink: 0;
+        }
+        .side-brand {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          padding: 4px 8px 14px;
+          border-bottom: 1px solid var(--line);
+          margin-bottom: 10px;
+        }
+        .side-brand span {
+          font-family: "Quicksand", "Nunito", sans-serif;
+          font-weight: 800;
+          font-size: 14px;
+          color: var(--text);
+        }
+        .side-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: none;
+          border: none;
+          text-align: left;
+          padding: 10px 12px;
+          border-radius: 11px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text);
+          cursor: pointer;
+          font-family: inherit;
+          transition:
+            background 0.15s,
+            color 0.15s;
+        }
+        .side-link:hover {
+          background: var(--bg);
+        }
+        .side-link.active {
+          background: color-mix(in srgb, var(--purple) 14%, transparent);
+          color: var(--purple-dk);
+        }
+        :root[data-theme="dark"] .side-link.active {
+          color: #d8c4ff;
+        }
+        .side-spacer {
+          flex: 1;
+        }
+        .side-foot {
+          border-top: 1px solid var(--line);
+          padding-top: 10px;
+          margin-top: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        #contextPanel {
+          display: flex;
+          flex-direction: column;
+          width: 224px;
+          height: calc(100dvh - 44px);
+          margin: 22px 0;
+          background: var(--card);
+          border: 1px solid var(--line);
+          border-radius: 20px;
+          padding: 16px 14px;
+          gap: 8px;
+          overflow-y: auto;
+          box-shadow: 0 10px 30px rgba(20, 10, 40, 0.08);
+          flex-shrink: 0;
+        }
+        .ctx-label {
+          font-size: 10.5px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+          color: var(--muted);
+          margin: 6px 0 0;
+        }
+        .ctx-card {
+          display: block;
+          width: 100%;
+          text-align: left;
+          background: var(--bg);
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          padding: 10px 11px;
+          font-size: 12.5px;
+          font-weight: 700;
+          color: var(--text);
+          cursor: pointer;
+          font-family: inherit;
+          text-decoration: none;
+          transition:
+            border-color 0.15s,
+            transform 0.15s;
+        }
+        .ctx-card:hover {
+          border-color: var(--purple);
+          transform: translateY(-1px);
+        }
+        .ctx-card small {
+          display: block;
+          font-weight: 500;
+          color: var(--muted);
+          font-size: 10.5px;
+          margin-top: 1px;
+        }
+      }
+
+      /* ---- v2: immediate input, shortcuts, mobile keyboard handling ---- */
+      html,
+      body {
+        overscroll-behavior: none;
+      }
+      #q {
+        resize: none;
+        font-family: inherit;
+        line-height: 1.35;
+        max-height: 120px;
+        overflow-y: auto;
+        display: block;
+      }
+      #inputbar {
+        align-items: flex-end;
+      }
+      #send {
+        position: relative;
+      }
+      #send.loading svg {
+        opacity: 0;
+      }
+      #send.loading::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid rgba(255, 255, 255, 0.45);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #send:disabled {
+        cursor: progress;
+      }
+      #shortcuts {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 7px 0 4px;
+        background: var(--bg);
+        border-top: 1px solid var(--line);
+      }
+      .sc-row {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 0 clamp(9px, 3cqw, 12px);
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .sc-row::-webkit-scrollbar {
+        display: none;
+      }
+      .sc-chip {
+        flex-shrink: 0;
+        font-family: "Quicksand", "Nunito", sans-serif;
+        background: var(--card);
+        border: 1px solid var(--purple);
+        color: var(--purple-dk);
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      :root[data-theme="dark"] .sc-chip {
+        color: #d8c4ff;
+      }
+      .sc-chip:hover:not(:disabled) {
+        background: var(--purple);
+        color: #fff;
+      }
+      .sc-cat {
+        flex-shrink: 0;
+        font-family: inherit;
+        background: color-mix(in srgb, var(--purple) 9%, var(--card));
+        border: 1px solid var(--line);
+        color: var(--text);
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 5px 10px;
+        border-radius: 9px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.15s;
+      }
+      .sc-cat:hover:not(:disabled) {
+        border-color: var(--purple);
+      }
+      .sc-chip:disabled,
+      .sc-cat:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      .empty-hint {
+        background: var(--card);
+      }
+      @media (max-width: 559px) {
+        html,
+        body {
+          height: var(--app-h, 100dvh);
+          overflow: hidden;
+        }
+        body {
+          position: fixed;
+          top: var(--app-top, 0px);
+          left: 0;
+          width: 100%;
+        }
+        #app {
+          height: var(--app-h, 100dvh);
+          max-height: var(--app-h, 100dvh);
+        }
+        #q {
+          font-size: 16px;
+        } /* 16px stops iOS zooming the page when the input is focused */
+      }
+      :root.kbd-open {
+        padding-bottom: 0;
+      }
+      :root.kbd-open #shortcuts,
+      :root.kbd-open .empty-hint {
+        display: none;
+      }
+      :root.kbd-open #inputbar {
+        padding-bottom: 10px;
+      }
+      @media (max-height: 480px) {
+        #shortcuts {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="sidebar" aria-label="Primary">
+      <div class="side-brand">
+        <svg
+          viewBox="0 0 100 100"
+          xmlns="http://www.w3.org/2000/svg"
+          style="width: 26px; height: 26px; flex-shrink: 0"
+        >
+          <g>
+            <path d="M50 4 L74 20 L50 36 L26 20 Z" fill="#EE6C4D" />
+            <path d="M50 36 L74 20 L74 52 L50 68 Z" fill="#5B2A9E" />
+            <path d="M50 36 L26 20 L26 52 L50 68 Z" fill="#8B5CF6" />
+            <path d="M50 68 L74 52 L74 84 L50 100 Z" fill="#402072" />
+            <path
+              d="M50 68 L26 52 L26 84 L50 100 Z"
+              fill="#EE6C4D"
+              opacity=".85"
+            />
+          </g>
+        </svg>
+        <span>CAPACITI Buddy</span>
+      </div>
+      <button class="side-link active" data-nav="home">🏠 Home</button>
+      <button class="side-link" data-nav="dashboard">📊 My Journey</button>
+      <button class="side-link" data-nav="buddy">💬 Buddy</button>
+      <button class="side-link" data-nav="learning">💻 Learning</button>
+      <button class="side-link" data-nav="career">💼 Career</button>
+      <button class="side-link" data-nav="wellness">❤️ Wellness</button>
+      <div class="side-spacer"></div>
+      <div class="side-foot">
+        <button class="side-link" data-nav="appearance">🎨 Appearance</button>
+        <button class="side-link" data-nav="profile">👤 Profile & chats</button>
+      </div>
+    </nav>
+    <div id="app">
+      <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+          <svg
+            class="logo-mark"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            style="
+              width: 44px;
+              height: 44px;
+              margin: 0 auto 10px;
+              display: block;
+            "
+          >
+            <g>
+              <path d="M50 4 L74 20 L50 36 L26 20 Z" fill="#EE6C4D" />
+              <path d="M50 36 L74 20 L74 52 L50 68 Z" fill="#5B2A9E" />
+              <path d="M50 36 L26 20 L26 52 L50 68 Z" fill="#8B5CF6" />
+              <path d="M50 68 L74 52 L74 84 L50 100 Z" fill="#402072" />
+              <path
+                d="M50 68 L26 52 L26 84 L50 100 Z"
+                fill="#EE6C4D"
+                opacity=".85"
+              />
+            </g>
+          </svg>
+          <h2>Welcome to CAPACITI Buddy</h2>
+          <p class="auth-sub">
+            Sign in or create a free account to get started.
+          </p>
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="signup">Sign up</button>
+            <button class="auth-tab" data-tab="signin">Sign in</button>
+          </div>
+          <div class="auth-form" id="signupForm">
+            <label class="sr-only" for="suName">Full name</label>
+            <input
+              id="suName"
+              type="text"
+              placeholder="Full name"
+              autocomplete="name"
+              aria-required="true"
+            />
+            <label class="sr-only" for="suEmail">Email address</label>
+            <input
+              id="suEmail"
+              type="email"
+              placeholder="Email address"
+              autocomplete="email"
+              aria-required="true"
+            />
+            <button class="auth-submit" id="signupBtn">Create account</button>
+          </div>
+          <div class="auth-form" id="signinForm" style="display: none">
+            <label class="sr-only" for="siEmail">Email address</label>
+            <input
+              id="siEmail"
+              type="email"
+              placeholder="Email address"
+              autocomplete="email"
+              aria-required="true"
+            />
+            <button class="auth-submit" id="signinBtnAuth">Sign in</button>
+          </div>
+          <div
+            class="auth-error"
+            id="authError"
+            role="alert"
+            aria-live="assertive"
+          ></div>
+          <p class="auth-note">
+            Your details stay on this device only — no password needed.
+          </p>
+        </div>
+      </div>
+      <header>
+        <button
+          id="logoBtn"
+          class="logo-btn"
+          title="Chats"
+          aria-label="Chat options and history"
+        >
+          <svg
+            class="logo-mark"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g>
+              <path d="M50 4 L74 20 L50 36 L26 20 Z" fill="#EE6C4D" />
+              <path d="M50 36 L74 20 L74 52 L50 68 Z" fill="#5B2A9E" />
+              <path d="M50 36 L26 20 L26 52 L50 68 Z" fill="#8B5CF6" />
+              <path d="M50 68 L74 52 L74 84 L50 100 Z" fill="#402072" />
+              <path
+                d="M50 68 L26 52 L26 84 L50 100 Z"
+                fill="#EE6C4D"
+                opacity=".85"
+              />
+            </g>
+          </svg>
+        </button>
+        <div class="htext">
+          <h1>CAPACITI Buddy</h1>
+          <div class="status"><i></i>Online now</div>
+        </div>
+        <div class="header-actions">
+          <button
+            id="signinBtn"
+            class="icon-btn"
+            title="Daily sign-in"
+            aria-label="Sign in for today"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 11l3 3L22 4" />
+              <path
+                d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+              />
+            </svg>
+          </button>
+          <button
+            id="themeBtn"
+            class="icon-btn"
+            title="Appearance"
+            aria-label="Appearance settings"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+              <path
+                d="M12 2a10 10 0 1 0 9.54 13.06 4 4 0 0 1-5.6-5.6A10 10 0 0 0 12 2z"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+      <div class="chat-panel" id="chatPanel">
+        <button class="new-chat-btn" id="newChatBtn">
+          <svg
+            viewBox="0 0 24 24"
+            width="13"
+            height="13"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          New chat
+        </button>
+        <label class="sr-only" for="chatSearch">Search conversations</label>
+        <input
+          id="chatSearch"
+          type="text"
+          class="chat-search"
+          placeholder="Search chats…"
+        />
+        <div class="chat-list" id="chatList"></div>
+        <div id="accountFooter" class="account-footer"></div>
+      </div>
+      <div class="theme-panel" id="themePanel">
+        <h4>Appearance</h4>
+        <div class="mode-row">
+          <button class="mode-btn" data-mode="auto">Auto</button>
+          <button class="mode-btn" data-mode="light">Light</button>
+          <button class="mode-btn" data-mode="dark">Dark</button>
+        </div>
+        <h4>Theme</h4>
+        <div class="swatch-row">
+          <button
+            class="swatch"
+            data-theme="capaciti"
+            style="background: linear-gradient(135deg, #5b2a9e, #ee6c4d)"
+            title="Capaciti"
+          ></button>
+          <button
+            class="swatch"
+            data-theme="ocean"
+            style="background: linear-gradient(135deg, #0e7c86, #f2a65a)"
+            title="Ocean"
+          ></button>
+          <button
+            class="swatch"
+            data-theme="sunset"
+            style="background: linear-gradient(135deg, #c2417a, #ffb238)"
+            title="Sunset"
+          ></button>
+          <button
+            class="swatch"
+            data-theme="forest"
+            style="background: linear-gradient(135deg, #2e7d4f, #e0a93e)"
+            title="Forest"
+          ></button>
+        </div>
+      </div>
+      <div
+        id="log"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+      ></div>
+      <div id="shortcuts" aria-label="Optional shortcuts">
+        <div class="sc-row" id="promptChips"></div>
+        <div class="sc-row" id="catPills"></div>
+      </div>
+      <div class="empty-hint">
+        Just type your question. Enter sends, Shift+Enter adds a line.
+      </div>
+      <div id="inputbar">
+        <label class="sr-only" for="q"
+          >Type your question for CAPACITI Buddy</label
+        >
+        <textarea
+          id="q"
+          rows="1"
+          placeholder="Ask CAPACITI Buddy anything…"
+          autocomplete="off"
+          enterkeyhint="send"
+        ></textarea>
+        <button id="send" aria-label="Send message">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <aside id="contextPanel" aria-label="Recommendations">
+      <div class="ctx-label">Recommended for you</div>
+      <button class="ctx-card" data-ctx="cv">
+        📄 Build your CV<small>Get structure & wording tips</small>
+      </button>
+      <button class="ctx-card" data-ctx="interview">
+        🎤 Practise an interview<small>5-question guided mock interview</small>
+      </button>
+      <button class="ctx-card" data-ctx="studyplan">
+        🗓️ Make a study plan<small>A realistic week, mapped out</small>
+      </button>
+      <div class="ctx-label">Need help?</div>
+      <a class="ctx-card" href="mailto:candidatehr@capaciti.org.za"
+        >📧 Candidate HR<small>Valeria</small></a
+      >
+      <a class="ctx-card" href="mailto:Giles.Moyo@capaciti.org.za"
+        >💻 IT Support<small>Giles Moyo</small></a
+      >
+      <div class="ctx-label">Wellness</div>
+      <button class="ctx-card" data-ctx="wellness">
+        ❤️ Wellness resources<small>Mindful Matters, SYKED & more</small>
+      </button>
+    </aside>
+
+    <script>
+      const KNOWLEDGE_BASE = [
+        {
+          id: "conduct-expectations",
+          category: "House Rules",
+          subCategory: "What is expected of candidates",
+          keywords: [
+            "conduct",
+            "expectations",
+            "expected",
+            "behaviour",
+            "behavior",
+            "respect",
+            "excellence",
+            "professional",
+            "integrity",
+            "code of conduct",
+            "rules",
+            "candidate",
+          ],
+          content:
+            "Strive for excellence in both technical and professional development. Respect CAPACITI's physical and virtual spaces, colleagues and all stakeholders. Follow your contract terms and all reasonable, lawful instructions from the curriculum delivery team. Uphold integrity, professionalism and ethical behaviour at all times, including at an end client, when working remotely, in interviews and at events. The Code of Conduct is built on equality, respect, fairness and balancing everyone's rights, and it applies to all candidates on any skills, training, work-simulation or internship programme.",
+        },
+        {
+          id: "conduct-end-client",
+          category: "House Rules",
+          subCategory: "End client rules",
+          keywords: [
+            "end client",
+            "client",
+            "placement",
+            "hosted",
+            "placed",
+            "host company",
+            "code of conduct",
+          ],
+          content:
+            "When placed at an end client you must follow CAPACITI's Code of Conduct AND the end client's own code of conduct. Treat clients and customers with respect and never disclose confidential business information to anyone outside CAPACITI.",
+        },
+        {
+          id: "attendance-absence-reporting",
+          category: "House Rules",
+          subCategory: "Attendance and reporting absence",
+          keywords: [
+            "attendance",
+            "absent",
+            "absence",
+            "late",
+            "punctual",
+            "sick",
+            "report",
+            "08:45",
+            "0845",
+            "manager",
+            "stipend",
+            "deduction",
+            "deducted",
+            "allowance",
+            "unapproved",
+            "leave",
+            "off",
+            "miss work",
+          ],
+          content:
+            "Be present, punctual and responsive during working hours. Tell your manager about any absence by 08:45 at the latest. Unapproved absence may lead to disciplinary action and/or deduction from your financial allowance (stipend). For leave applications and leave policy questions, contact Candidate HR.",
+        },
+        {
+          id: "daily-sign-in-charging",
+          category: "House Rules",
+          subCategory: "Daily sign-in and charging devices",
+          keywords: [
+            "sign in",
+            "signin",
+            "sign-in",
+            "08:30",
+            "attendance register",
+            "charge",
+            "charging",
+            "charger",
+            "laptop",
+            "power",
+            "plug",
+            "tea",
+            "lunch",
+          ],
+          content:
+            "Signing in is mandatory every day by 08:30 (you can use the tick sign-in button at the top of this chat to log your time). Do not charge devices at your workstation because of power constraints. Ask Kefiloe to charge your device during tea or lunch.",
+        },
+        {
+          id: "dress-code",
+          category: "House Rules",
+          subCategory: "Dress code",
+          keywords: [
+            "dress",
+            "dress code",
+            "attire",
+            "clothes",
+            "clothing",
+            "wear",
+            "outfit",
+            "tight",
+            "muscle shirt",
+            "ripped",
+            "slippers",
+            "crop top",
+            "cycle shorts",
+            "mini skirt",
+            "tights",
+            "neckline",
+            "beach",
+            "gym",
+            "nightclub",
+            "slogan",
+            "men",
+            "women",
+            "ladies",
+          ],
+          content:
+            "Dress appropriately for your whole contract period and behave in a socially acceptable manner. Not acceptable for men: extremely tight clothing, sleeveless muscle shirts, ripped clothing, slippers, attire for the beach, yard work, nightclub or exercise, and clothing with offensive/controversial slogans or distracting words or pictures. Not acceptable for women: crop tops/jackets, plunging necklines or skin-baring clothing, cycle shorts (short tights) or mini skirts (tights must be worn with a suitable-length top), ripped clothing, slippers, attire for the beach, yard work, nightclub or exercise, and offensive/controversial or distracting clothing.",
+        },
+        {
+          id: "cellphone-usage",
+          category: "House Rules",
+          subCategory: "Cellphone usage",
+          keywords: [
+            "phone",
+            "cellphone",
+            "cell",
+            "mobile",
+            "silent",
+            "vibrate",
+            "bag",
+            "emergency",
+            "whatsapp",
+            "call",
+            "working hours",
+            "family",
+          ],
+          content:
+            "During working hours (tea and lunch excluded) keep your phone on silent or vibrate, inside your bag and out of sight of the curriculum delivery team. Use it only in an emergency, and not to communicate with the curriculum delivery team while at your workstation. Family or important contacts (e.g. your child's school or carer) can be given CAPACITI's contact number to reach you in emergencies.",
+        },
+        {
+          id: "social-media-linkedin",
+          category: "House Rules",
+          subCategory: "LinkedIn and social media guidelines",
+          keywords: [
+            "linkedin",
+            "social media",
+            "post",
+            "posting",
+            "profile",
+            "disclaimer",
+            "professional",
+            "confidential",
+            "opinions",
+            "brand",
+            "monitor",
+            "removal",
+          ],
+          content:
+            "LinkedIn posts about CAPACITI are allowed if professional: keep a professional tone aligned with the organisation's values; never share proprietary, confidential or sensitive information about CAPACITI, clients or projects, and get approval before discussing company matters publicly; be respectful to everyone; share industry insights and career achievements, not controversial or personal opinions; follow legal and IP rules; state that opinions are your own, and add a disclaimer if your profile mentions CAPACITI. CAPACITI may monitor related activity and request removal of posts. Non-compliance can lead to disciplinary action, up to termination of candidacy.",
+        },
+        {
+          id: "social-media-other-platforms",
+          category: "House Rules",
+          subCategory: "Other social media platforms",
+          keywords: [
+            "facebook",
+            "instagram",
+            "tiktok",
+            "twitter",
+            "snapchat",
+            "youtube",
+            "whatsapp",
+            "telegram",
+            "discord",
+            "social media",
+            "post",
+            "status",
+            "story",
+            "company",
+            "stakeholders",
+          ],
+          content:
+            "Zero tolerance for company-related posting outside LinkedIn: no posts about CAPACITI, its stakeholders or its intellectual property on any other social media platform.",
+        },
+        {
+          id: "conduct-online-platforms",
+          category: "House Rules",
+          subCategory: "Behaviour on digital platforms",
+          keywords: [
+            "email",
+            "teams",
+            "ms teams",
+            "lms",
+            "platform",
+            "online",
+            "virtual",
+            "language",
+            "inappropriate",
+            "disrepute",
+            "disrupt",
+            "whatsapp",
+            "discord",
+          ],
+          content:
+            "Behaviour or inappropriate language that disrupts the learning environment or brings CAPACITI into disrepute, physically or virtually, is prohibited. This includes (but is not limited to) email, LinkedIn, Facebook, YouTube, Twitter, WhatsApp/Telegram, the CAPACITI LMS, MS Teams, Instagram, TikTok, Snapchat and Discord.",
+        },
+        {
+          id: "conduct-respect-abuse",
+          category: "House Rules",
+          subCategory: "Respect, abuse and assault",
+          keywords: [
+            "fight",
+            "assault",
+            "abuse",
+            "abusive",
+            "obscene",
+            "racist",
+            "sexist",
+            "language",
+            "swear",
+            "shout",
+            "violence",
+            "verbal",
+            "physical",
+            "suspended",
+            "evict",
+            "harass",
+            "harassment",
+            "discrimination",
+            "victimisation",
+          ],
+          content:
+            "Assault (verbal or physical) and abusive, obscene, racist or sexist language break the principles of respect and fairness. The candidate is suspended and removed from the premises immediately, pending disciplinary action, and CAPACITI may evict anyone guilty of assault. Harassment (e.g. sexual or racial), victimisation and discrimination are very serious misconduct.",
+        },
+        {
+          id: "conduct-insubordination",
+          category: "House Rules",
+          subCategory: "Reasonable and lawful instructions",
+          keywords: [
+            "insubordination",
+            "instruction",
+            "instructions",
+            "refuse",
+            "defy",
+            "disobey",
+            "rude",
+            "cheeky",
+            "manager",
+            "authority",
+            "order",
+            "obey",
+          ],
+          content:
+            "You must follow reasonable and lawful instructions from the curriculum delivery team or anyone they delegate, for example attending an important training session, arriving on time after repeated lateness, following the dress code, complying with health and safety laws, or providing a medical certificate for illness. Resisting or defying authority, refusal, insolence, rudeness or bringing CAPACITI's or the end client's name into disrepute counts as insubordination. Gross insubordination is very serious misconduct.",
+        },
+        {
+          id: "conduct-confidentiality-property",
+          category: "House Rules",
+          subCategory: "Confidentiality, equipment and property",
+          keywords: [
+            "confidential",
+            "confidentiality",
+            "information",
+            "equipment",
+            "property",
+            "laptop",
+            "tools",
+            "return",
+            "steal",
+            "take",
+            "remove",
+            "borrow",
+            "authorisation",
+            "company property",
+          ],
+          content:
+            "Do not disclose confidential business information to anyone who is not employed by CAPACITI. Treat CAPACITI's property and equipment, and colleagues' belongings, with care, and do not remove them from the premises without proper authorisation. All tools and equipment (except items you bought yourself) stay CAPACITI property and must be returned at the end of your training period. Unauthorised use of company or client property is serious misconduct.",
+        },
+        {
+          id: "conduct-honesty-records",
+          category: "House Rules",
+          subCategory: "Honesty, forged documents and plagiarism",
+          keywords: [
+            "falsify",
+            "forge",
+            "forged",
+            "fake",
+            "fraud",
+            "plagiarism",
+            "plagiarise",
+            "plagiarize",
+            "copy",
+            "copyright",
+            "records",
+            "documents",
+            "lie",
+            "dishonest",
+            "misleading",
+            "biographical",
+            "details",
+            "update",
+          ],
+          content:
+            "Altering or forging records, forms or documents, or giving falsified or misleading information (verbal or written), is serious misconduct and grounds for immediate dismissal. Sharing forged, plagiarised, copyrighted or confidential material with anyone (other candidates, employers, regulators, institutions) is serious misconduct handled under the disciplinary procedure. Keep your biographical data (contact details, address, next of kin, email) accurate and up to date with CAPACITI and all stakeholders.",
+        },
+        {
+          id: "conduct-relationships",
+          category: "House Rules",
+          subCategory: "Relationships with colleagues",
+          keywords: [
+            "relationship",
+            "dating",
+            "romantic",
+            "romance",
+            "fraternisation",
+            "fraternization",
+            "boyfriend",
+            "girlfriend",
+            "partner",
+            "colleague",
+          ],
+          content:
+            "Fraternisation with colleagues (candidates, staff, end client employees, external stakeholders) is not encouraged. Romantic relationships between candidates must be disclosed to the Curriculum Delivery Team.",
+        },
+        {
+          id: "conduct-forum-guidelines",
+          category: "House Rules",
+          subCategory: "Learner forum guidelines",
+          keywords: [
+            "forum",
+            "community",
+            "moderator",
+            "moderation",
+            "post",
+            "report",
+            "flag",
+            "spam",
+            "assignment",
+            "peer support",
+          ],
+          content:
+            "Learner forum rules: no abusive, obscene, racist, sexist or discriminatory language; no harassment; no sharing of confidential CAPACITI, client or candidate information; no spam or promotional content. Asking for help with assignments is fine (peer support), but sharing full solutions to graded assessments or encouraging academic dishonesty is not. The Curriculum Delivery Team and designated staff moderate and can remove posts or restrict access. Serious or repeated breaches (harassment, hate speech, confidential leaks) are treated as misconduct under the Code of Conduct. Report inappropriate content to a moderator, or to your Curriculum Delivery Team / Candidate HR (candidatehr@capaciti.org.za).",
+        },
+        {
+          id: "ohs-substances",
+          category: "OHS & Safety",
+          subCategory: "Alcohol, cannabis and illegal substances",
+          keywords: [
+            "alcohol",
+            "drink",
+            "drunk",
+            "liquor",
+            "beer",
+            "drugs",
+            "dagga",
+            "cannabis",
+            "marijuana",
+            "weed",
+            "substance",
+            "substances",
+            "intoxicated",
+            "high",
+            "under the influence",
+            "heroin",
+            "cocaine",
+            "ecstasy",
+            "molly",
+            "zero tolerance",
+          ],
+          content:
+            "Zero tolerance: you may not be under the influence of alcohol, cannabis, drugs or any other prohibited substance on site or during any CAPACITI activity, and you may not bring liquor or illegal substances (including marijuana/dagga) onto the premises. Under the Occupational Health and Safety Act (General Safety Regulation 2A) CAPACITI may not allow anyone who is or appears intoxicated into the workplace, and cannabis counts as an intoxicating substance. Anyone who appears intoxicated is removed from the premises and faces disciplinary action; being under the influence or in possession at work is very serious misconduct.",
+        },
+        {
+          id: "ohs-searches-inspections",
+          category: "OHS & Safety",
+          subCategory: "Bag, workstation and vehicle searches",
+          keywords: [
+            "search",
+            "searched",
+            "inspect",
+            "inspection",
+            "bag",
+            "bags",
+            "workstation",
+            "vehicle",
+            "car",
+            "locker",
+            "privacy",
+            "dignity",
+            "constitution",
+            "suspicion",
+            "packets",
+          ],
+          content:
+            "To protect candidates and CAPACITI, CAPACITI may search and inspect workstations, vehicles, bags and packets on its premises or an end client's premises. Searches are done with respect for human dignity and with regard to the Constitution. A candidate's person may also be searched if there is reasonable suspicion of misconduct.",
+        },
+        {
+          id: "ohs-weapons",
+          category: "OHS & Safety",
+          subCategory: "Weapons prohibition",
+          keywords: [
+            "weapon",
+            "weapons",
+            "gun",
+            "firearm",
+            "knife",
+            "knives",
+            "panga",
+            "pipe",
+            "golf club",
+            "sjambok",
+            "offensive weapon",
+            "dangerous",
+          ],
+          content:
+            "No candidate may enter CAPACITI's premises or an end client's premises with firearms or offensive weapons (firearms, knives, pipes, pangas, golf clubs, sjamboks and similar). Possession of a firearm or dangerous weapon is very serious misconduct.",
+        },
+        {
+          id: "ohs-hygiene-safety-duties",
+          category: "OHS & Safety",
+          subCategory: "Health, safety and hygiene duties",
+          keywords: [
+            "health",
+            "safety",
+            "hygiene",
+            "clean",
+            "tidy",
+            "workspace",
+            "environment",
+            "emergency",
+            "evacuation",
+            "ohs",
+            "she",
+            "safe",
+          ],
+          content:
+            "Follow all occupational health, safety and hygiene practices of CAPACITI or the end client where you are placed, and keep your work environment clean. Complying with health and safety laws is a reasonable and lawful instruction. For safety or emergency matters on site, speak to the SHE Rep, a First Aider or a Fire Marshal.",
+        },
+        {
+          id: "ohs-she-rep",
+          category: "OHS & Safety",
+          subCategory: "SHE Rep",
+          keywords: [
+            "she",
+            "sherep",
+            "rep",
+            "she rep",
+            "safety rep",
+            "safety health environment",
+            "site representative",
+            "giles",
+            "moyo",
+            "health and safety",
+          ],
+          content:
+            "Giles Moyo is the SHE (Safety, Health & Environment) Rep on site.",
+        },
+        {
+          id: "ohs-first-aiders",
+          category: "OHS & Safety",
+          subCategory: "First Aiders on site",
+          keywords: [
+            "first aid",
+            "first aider",
+            "first aiders",
+            "injury",
+            "injured",
+            "hurt",
+            "medical",
+            "sick",
+            "accident",
+            "kefiloe",
+            "mphye",
+            "oarabile",
+            "oorabile",
+            "mogase",
+            "rakhuda",
+            "tshitimbi",
+          ],
+          content:
+            "First Aiders on site: Kefiloe Mphye (Talent Development Coach), Oarabile Mogase (Talent Development Coach) and Rakhuda Tshitimbi (Tech Mentor).",
+        },
+        {
+          id: "ohs-fire-marshals",
+          category: "OHS & Safety",
+          subCategory: "Fire Marshals on site",
+          keywords: [
+            "fire",
+            "fire marshal",
+            "fire marshals",
+            "evacuation",
+            "alarm",
+            "assembly point",
+            "kalebe",
+            "nyonyana",
+            "sakhile",
+            "mazibuko",
+            "lethu",
+            "mlangeni",
+          ],
+          content:
+            "Fire Marshals on site: Kalebe Nyonyana (Tech Mentor), Sakhile Mazibuko (Talent Development Coach) and Lethu Mlangeni (Tech Mentor).",
+        },
+        {
+          id: "disc-overview",
+          category: "Disciplinary",
+          subCategory: "How misconduct is categorised",
+          keywords: [
+            "disciplinary",
+            "discipline",
+            "misconduct",
+            "offence",
+            "offense",
+            "transgression",
+            "categories",
+            "minor",
+            "serious",
+            "very serious",
+            "procedure",
+            "corrective",
+            "warning",
+          ],
+          content:
+            "Misconduct falls into three categories: minor transgressions, serious misconduct and very serious misconduct. The procedure is corrective: it aims to correct conduct, show the candidate how it affected others, and prevent repeats. The tables are a guide and each case is assessed on its circumstances. CAPACITI may use a lighter measure than the guideline if that is reasonable and consistent with how other candidates were treated.",
+        },
+        {
+          id: "disc-minor",
+          category: "Disciplinary",
+          subCategory: "Minor transgressions",
+          keywords: [
+            "minor",
+            "transgression",
+            "late",
+            "lateness",
+            "timekeeping",
+            "absence",
+            "unauthorised",
+            "whereabouts",
+            "procedures",
+            "counselling",
+            "counseling",
+          ],
+          content:
+            "Minor transgressions include: unauthorised absence for less than 3 days, absence without leave and not telling CAPACITI where you are, ignoring or abusing conditions of employment or standard procedures, and poor timekeeping or persistent late-coming. Where no earlier measure is valid, the Curriculum Delivery Team can issue a first written warning on the spot; it is recorded in writing and signed by both parties.",
+        },
+        {
+          id: "disc-serious",
+          category: "Disciplinary",
+          subCategory: "Serious misconduct",
+          keywords: [
+            "serious",
+            "misconduct",
+            "desertion",
+            "absent",
+            "3 days",
+            "conflict of interest",
+            "disclosure",
+            "client information",
+            "property",
+            "electronic communications",
+            "policy",
+            "warning",
+          ],
+          content:
+            "Serious misconduct includes: unauthorised absence for 3 days or more (desertion), acting in conflict with the Company's interests, disclosing or misusing Company or client information, unauthorised use of Company or client property for private purposes, and breaching the electronic communications policy.",
+        },
+        {
+          id: "disc-very-serious",
+          category: "Disciplinary",
+          subCategory: "Very serious misconduct",
+          keywords: [
+            "very serious",
+            "second job",
+            "extra job",
+            "another job",
+            "side job",
+            "side hustle",
+            "part time job",
+            "moonlight",
+            "dismissal",
+            "dismissed",
+            "fired",
+            "theft",
+            "steal",
+            "fraud",
+            "bribery",
+            "blackmail",
+            "corruption",
+            "harassment",
+            "discrimination",
+            "weapon",
+            "assault",
+            "moonlighting",
+            "abscondment",
+            "abscond",
+            "intellectual property",
+            "copyright",
+            "insubordination",
+            "strike",
+            "industrial action",
+            "intoxicated",
+            "drugs",
+          ],
+          content:
+            "Very serious misconduct includes: bribery, blackmail, corruption, fraud, dishonesty, theft or damage to/removal of property; unauthorised possession or misappropriation of Company, colleague or client property or information; possessing a firearm or dangerous weapon; victimisation, harassment (e.g. sexual, racial) or discrimination; illegal industrial action or inciting others (strikes, work stoppages); moonlighting (another programme or extra job); abscondment (absent indefinitely, uncontactable, not responding to the employer); violating intellectual property, copyright or patents; gross insubordination or wilful non-compliance; assault or attempted assault; and being under the influence of or possessing liquor or drugs at work. These skip the progressive steps: the sanction can go straight to a final written warning or a hearing.",
+        },
+        {
+          id: "disc-progressive-matrix",
+          category: "Disciplinary",
+          subCategory: "Progressive warnings",
+          keywords: [
+            "progressive",
+            "warning",
+            "warnings",
+            "matrix",
+            "counselling",
+            "written warning",
+            "final written warning",
+            "fww",
+            "hearing",
+            "dismissal",
+            "first",
+            "second",
+            "third",
+            "fourth",
+            "fifth",
+            "escalate",
+            "steps",
+          ],
+          content:
+            "Progressive steps. Minor: 1st formal counselling, 2nd first written warning, 3rd second written warning, 4th final written warning, 5th disciplinary hearing with possible dismissal. Serious: 1st written warning, 2nd second written warning, 3rd final written warning, 4th disciplinary hearing with possible dismissal. Very serious: 1st transgression can be a final written warning or a disciplinary hearing.",
+        },
+        {
+          id: "disc-warning-validity",
+          category: "Disciplinary",
+          subCategory: "How long warnings stay valid",
+          keywords: [
+            "warning",
+            "validity",
+            "valid",
+            "expire",
+            "expires",
+            "how long",
+            "months",
+            "counselling",
+            "first written warning",
+            "second written warning",
+            "final written warning",
+            "contract",
+            "aggravating",
+          ],
+          content:
+            "Formal counselling is valid for the period agreed in the counselling session. A first written warning is valid for 3 months, a second written warning for 6 months, and a final written warning from the date of issue until the end of your contract. A valid warning is taken into account if you are found guilty of another offence, so it can make the next measure more severe.",
+        },
+        {
+          id: "disc-suspension",
+          category: "Disciplinary",
+          subCategory: "Suspension pending investigation",
+          keywords: [
+            "suspend",
+            "suspended",
+            "suspension",
+            "investigation",
+            "premises",
+            "campus",
+            "allegation",
+            "barred",
+            "not allowed",
+          ],
+          content:
+            "You may be suspended temporarily (not allowed on the premises) while an allegation of a very serious transgression is investigated or awaiting a hearing. Suspension exists only to protect CAPACITI from further damage. CAPACITI must give you the reasons in writing, and the disciplinary enquiry must take place as soon as reasonably possible afterwards.",
+        },
+        {
+          id: "disc-hearing-process",
+          category: "Disciplinary",
+          subCategory: "Disciplinary hearing, notice and representation",
+          keywords: [
+            "hearing",
+            "enquiry",
+            "inquiry",
+            "notice",
+            "48 hours",
+            "representation",
+            "representative",
+            "external",
+            "lawyer",
+            "union",
+            "chairperson",
+            "complainant",
+            "witness",
+            "defence",
+            "rights",
+            "present case",
+            "peer",
+            "fellow candidate",
+          ],
+          content:
+            "For serious and very serious misconduct you get written notice of the disciplinary enquiry: the alleged transgression, enough information to prepare your defence (place, date and time of the incident) and the date, time and place of the hearing. Notice is at least 48 hours, excluding weekends and public holidays. You have the right to present your case. Present at the hearing: the chairperson (relevant manager), the complainant (relevant Curriculum Delivery Team member), you as respondent, a representative who must be a fellow candidate you choose (no external representation is allowed), and witnesses for either side. CAPACITI keeps a written record on your personal file.",
+        },
+        {
+          id: "disc-refuse-sign",
+          category: "Disciplinary",
+          subCategory: "Refusing to sign a warning",
+          keywords: [
+            "refuse",
+            "sign",
+            "signature",
+            "warning",
+            "signed",
+            "record",
+            "file",
+            "candidate hr",
+          ],
+          content:
+            "Refusing to sign a warning does not invalidate it. A Candidate HR team member documents the refusal in writing and it is placed in your candidate records.",
+        },
+        {
+          id: "yes-overview",
+          category: "Programme & YES",
+          subCategory: "What is the YES programme",
+          keywords: [
+            "yes",
+            "how long",
+            "duration",
+            "length",
+            "year",
+            "twelve months",
+            "youth employment service",
+            "programme",
+            "program",
+            "12 months",
+            "contract",
+            "work experience",
+            "minimum wage",
+            "salary",
+            "employer",
+            "experience",
+            "reference letter",
+            "cv",
+            "tax",
+            "uif",
+          ],
+          content:
+            "YES (Youth Employment Service) is a 12-month quality work experience that helps young people break the 'no job without experience, no experience without a job' cycle. Your employer provides a 12-month employment contract, on-the-job experience with a supervisor, and a monthly salary at or above the national minimum wage (R4,992/month before tax as of March 2025; UIF/SDL deductions may apply). You can only do YES once, unless you left before completing 8 months, in which case you may be able to reapply.",
+        },
+        {
+          id: "yes-three-pillars",
+          category: "Programme & YES",
+          subCategory: "Three pillars of YES",
+          keywords: [
+            "pillars",
+            "three pillars",
+            "work experience",
+            "learning",
+            "support",
+            "yes",
+            "check-in",
+            "monthly call",
+            "supervisor",
+          ],
+          content:
+            "YES has three pillars. Work Experience: 12 months on the job with a salary and a dedicated supervisor. Learning: online training on the YES One app covering work readiness, entrepreneurship and digital skills. Support: a monthly check-in call from YES to confirm you are getting a quality work experience.",
+        },
+        {
+          id: "yes-expectations",
+          category: "Programme & YES",
+          subCategory: "What YES expects of you",
+          keywords: [
+            "expected",
+            "expectations",
+            "yes youth",
+            "show up",
+            "complete learning",
+            "monitoring call",
+            "check-in",
+            "answer",
+            "network",
+            "skills",
+          ],
+          content:
+            "As YES Youth: show up every day and give your best, complete your YES One learning on the app, answer your monthly monitoring call from YES, and use the experience to build skills, work experience and your professional network.",
+        },
+        {
+          id: "yes-journey-timeline",
+          category: "Programme & YES",
+          subCategory: "Your 12-month YES journey",
+          keywords: [
+            "journey",
+            "timeline",
+            "learning journey",
+            "month",
+            "months",
+            "12 months",
+            "onboarding",
+            "offboarding",
+            "survey",
+            "surveys",
+            "supervisor",
+            "milestones",
+            "stages",
+            "what happens",
+          ],
+          content:
+            "Your YES journey: YES Onboarding (induction), complete your learning modules (aim to finish by month 9), 12 monthly check-in calls, supervisor surveys at months 4, 7 and 10, and YES Offboarding between months 9 and 12. Supervisor surveys feed into your final reference letter.",
+        },
+        {
+          id: "yes-monthly-check-in",
+          category: "Programme & YES",
+          subCategory: "Monthly check-in call",
+          keywords: [
+            "check-in",
+            "checkin",
+            "monthly",
+            "call",
+            "monitoring",
+            "phone",
+            "yes calls",
+            "quality",
+          ],
+          content:
+            "YES phones you once a month (12 calls in total) to check how your work experience is going. Please answer it: it is part of making sure you get a quality placement.",
+        },
+        {
+          id: "yes-induction-baseline",
+          category: "Programme & YES",
+          subCategory: "Induction and Baseline Survey",
+          keywords: [
+            "induction",
+            "baseline",
+            "baseline survey",
+            "unlock",
+            "learning page",
+            "module",
+            "yes one",
+            "my learning",
+            "teams",
+            "self-induction",
+            "onboarding",
+            "book",
+            "booking",
+          ],
+          content:
+            "Self-induction: log into the YES One app, go to My Learning and complete the Baseline Survey (this unlocks your learning page) and then the Induction Module (this unlocks the Work Readiness modules). If you cannot access your account, live inductions run online on Microsoft Teams. Onboarding/offboarding sessions can be booked at https://outlook.office365.com/owa/calendar/YouthInductions1@yes4youth.co.za/bookings/",
+        },
+        {
+          id: "yes-learning-paths",
+          category: "Programme & YES",
+          subCategory: "Three learning paths",
+          keywords: [
+            "learning",
+            "learning path",
+            "learning paths",
+            "learning journey",
+            "work readiness",
+            "entrepreneurship",
+            "digital",
+            "ai explorer",
+            "ai pathfinder",
+            "modules",
+            "hours",
+            "25 hours",
+            "month 9",
+            "courses",
+            "curriculum",
+          ],
+          content:
+            "Three learning journeys on YES One, about 25 hours in total, ideally finished by month 9. Work Readiness: 21 modules (~18 hrs) covering growth mindset, professionalism, money and time management, communication, teamwork, problem solving, emotional regulation, customer service, health and safety, online etiquette and building a digital persona. Entrepreneurship: 12 modules (~5 hrs) on being an entrepreneur, knowing yourself and your industry, spotting opportunities, innovation, pricing, marketing, SMART goals and planning. Digital: 2 modules (1 hr), AI Explorer and AI Pathfinder, introducing AI basics and advanced AI concepts.",
+        },
+        {
+          id: "yes-one-app-access",
+          category: "Programme & YES",
+          subCategory: "YES One app, login and progress",
+          keywords: [
+            "yes one",
+            "app",
+            "download",
+            "google play",
+            "app store",
+            "appgallery",
+            "browser",
+            "login",
+            "password",
+            "reset",
+            "forgot",
+            "id number",
+            "otp",
+            "progress",
+            "tracker",
+            "tick",
+            "youth account",
+            "email",
+          ],
+          content:
+            "Get YES One from Google Play, the App Store or AppGallery, or use the browser version at https://yesapp.yes4youth.co.za/login. Password reset: tap Forgot password, choose Youth Account, enter your South African ID number and request a reset; a link goes to the email your employer has on file (or you can use an OTP sent to your phone). If your email or phone number on file is wrong, email youth@yes4youth.co.za. To check progress, open the 3-line menu inside a module: the tracker shows 100% when every session is done and completed sessions have a tick.",
+        },
+        {
+          id: "yes-offboarding-documents",
+          category: "Programme & YES",
+          subCategory: "Offboarding, certificates and CV",
+          keywords: [
+            "offboarding",
+            "completion",
+            "certificate",
+            "certificates",
+            "cv",
+            "reference letter",
+            "reference",
+            "documents",
+            "month 12",
+            "finish",
+            "end of programme",
+            "permanent",
+            "alumni",
+            "after",
+          ],
+          content:
+            "Between months 9 and 12 you attend an offboarding session. In month 12 you receive up to three learning certificates (one per completed learning journey), a CV pre-populated with your work and learning details (editable), an automatically generated reference letter based on your module completion and supervisor feedback, and a completion certificate. You may be offered a permanent role if the sponsoring company has capacity and need, but that is at the company's discretion.",
+        },
+        {
+          id: "yes-alumni-pathways",
+          category: "Programme & YES",
+          subCategory: "What next after YES",
+          keywords: [
+            "pathways",
+            "after",
+            "next",
+            "alumni",
+            "further study",
+            "studies",
+            "sayouth",
+            "entrepreneurship",
+            "siyazakhela",
+            "nyda",
+            "employment",
+            "future",
+          ],
+          content:
+            "After YES, common pathways are: continued employment with the sponsoring company (at their discretion), further employment or study (via SAYouth.mobi), or entrepreneurship (via the Siyazakhela learning modules and links to the National Youth Development Agency, NYDA).",
+        },
+        {
+          id: "programme-learning-journey-overview",
+          category: "Programme & YES",
+          subCategory: "Learning journey overview",
+          keywords: [
+            "learning journey",
+            "journey",
+            "explain",
+            "programme",
+            "stages",
+            "bootcamp",
+            "applied learning",
+            "hosted employment",
+            "stream",
+            "coursera",
+            "lms",
+            "learning",
+            "overview",
+            "how it works",
+          ],
+          content:
+            "Your CAPACITI journey has three stages: bootcamp, applied learning, then hosted employment, within the stream you were selected for. Alongside it, YES One learning (Work Readiness, Entrepreneurship, Digital, about 25 hours) should be finished by month 9, and all course content is on the CAPACITI LMS. Coursera content includes an AI Bootcamp (2 months: AI For Everyone and Generative AI: Prompt Engineering Basics certificates) and Professional Development (2 months, 17 courses).",
+        },
+        {
+          id: "contacts-candidate-hr",
+          category: "Contacts & Support",
+          subCategory: "Candidate HR (Valeria)",
+          keywords: [
+            "hr",
+            "human resources",
+            "valeria",
+            "valerie",
+            "vallerie",
+            "baloyi",
+            "candidate hr",
+            "stipend",
+            "salary",
+            "pay",
+            "payment",
+            "paid",
+            "money",
+            "leave",
+            "apply for leave",
+            "absence",
+            "queries",
+            "email",
+            "candidatehr",
+            "grievance",
+            "complaint",
+            "bad work experience",
+          ],
+          content:
+            "Candidate HR: Valeria, candidatehr@capaciti.org.za. Contact her for stipend/salary and pay queries, leave applications and leave policy, and general HR matters. If your stipend has not been paid, email with your details. If you are having a bad work experience (every YES placement must comply with the Basic Conditions of Employment Act), raise it with HR and your supervisor first, then candidatehr@capaciti.org.za if it is not resolved.",
+        },
+        {
+          id: "contacts-it-facilities",
+          category: "Contacts & Support",
+          subCategory: "IT, systems and facilities (Giles Moyo)",
+          keywords: [
+            "it",
+            "itsupport",
+            "it support",
+            "systems",
+            "system",
+            "access",
+            "login",
+            "log in",
+            "building",
+            "campus access",
+            "facilities",
+            "wifi",
+            "laptop",
+            "technical",
+            "giles",
+            "moyo",
+            "help desk",
+          ],
+          content:
+            "Giles Moyo handles IT issues, systems access, building/business access and facilities (Giles.Moyo@capaciti.org.za). He is also the SHE Rep.",
+        },
+        {
+          id: "contacts-talent-coaches",
+          category: "Contacts & Support",
+          subCategory: "Talent Development Coaches",
+          keywords: [
+            "coach",
+            "coaches",
+            "talent development",
+            "talent development coach",
+            "kefiloe",
+            "mphye",
+            "sakhile",
+            "mazibuko",
+            "oarabile",
+            "oorabile",
+            "mogase",
+            "who to talk to",
+            "curriculum delivery",
+            "support",
+            "mentor",
+          ],
+          content:
+            "Talent Development Coaches: Kefiloe Mphye (First Aid), Sakhile Mazibuko (Fire Marshal) and Oarabile Mogase (First Aid). Talk to them about your learning, professional development and how you are settling in.",
+        },
+        {
+          id: "contacts-tech-mentors",
+          category: "Contacts & Support",
+          subCategory: "Tech Mentors",
+          keywords: [
+            "tech mentor",
+            "tech mentors",
+            "mentor",
+            "mentors",
+            "technical",
+            "coding",
+            "nonhlanhla",
+            "mndebela",
+            "kalebe",
+            "nyonyana",
+            "rakhuda",
+            "tshitimbi",
+            "lethu",
+            "mlangeni",
+            "who to talk to",
+            "stuck",
+            "help",
+          ],
+          content:
+            "Tech Mentors: Nonhlanhla Mndebela, Kalebe Nyonyana (Fire Marshal), Rakhuda Tshitimbi (First Aid) and Lethu Mlangeni (Fire Marshal). Ask them for help with technical content in your stream.",
+        },
+        {
+          id: "contacts-out-of-scope",
+          category: "Contacts & Support",
+          subCategory: "Who to ask when I can't help",
+          keywords: [
+            "complaint",
+            "grievance",
+            "escalate",
+            "out of scope",
+            "who do i ask",
+            "not sure",
+            "manager",
+            "yes youth",
+            "yes4youth",
+            "youth",
+            "account",
+            "problem",
+            "issue",
+            "unhappy",
+          ],
+          content:
+            "For anything outside what Buddy can answer, speak to your manager, your Talent Development Coach or Tech Mentor, or Candidate HR (candidatehr@capaciti.org.za). For complaints or grievances outside HR and IT, contact YES Youth. For YES One account problems (wrong email or phone on file), email youth@yes4youth.co.za.",
+        },
+        {
+          id: "contacts-mental-wellbeing",
+          category: "Contacts & Support",
+          subCategory: "Mental wellbeing: YES Mindful Matters and SYKED",
+          keywords: [
+            "mental",
+            "mental health",
+            "wellbeing",
+            "wellness",
+            "stress",
+            "stressed",
+            "anxious",
+            "anxiety",
+            "depressed",
+            "counselling",
+            "counseling",
+            "therapy",
+            "therapist",
+            "mindful",
+            "mindful matters",
+            "syked",
+            "support",
+            "overwhelmed",
+            "burnout",
+            "sad",
+            "podcast",
+          ],
+          content:
+            "YES Mindful Matters is a free wellbeing initiative for youth and supervisors: 1-on-1 counselling with registered therapists, group sessions on wellness and career development, plus blogs and podcasts (https://connect.yes4youth.co.za/mindful-matters, also under Resources in the YES app). SYKED is a telehealth mental wellness platform for private, affordable therapist support; book through your own SYKED account rather than through this chat, and check with your Curriculum Delivery Team about how it works on your programme. You can always talk to your coach, mentor or Candidate HR too.",
+        },
+        {
+          id: "career-interview-attendance",
+          category: "Career",
+          subCategory: "Interviews: attend and represent CAPACITI well",
+          keywords: [
+            "interview",
+            "interviews",
+            "prepare",
+            "preparation",
+            "attend",
+            "attendance",
+            "miss",
+            "scheduled",
+            "professional",
+            "dress",
+            "on time",
+            "represent",
+            "employer",
+            "job",
+            "mock interview",
+            "practice",
+            "practise",
+          ],
+          content:
+            "You must attend interviews as scheduled by CAPACITI; failing to attend leads to disciplinary action. In interviews you represent CAPACITI, so integrity, professionalism and ethical behaviour apply, and the dress code applies too. In this app you can type 'mock interview' for a guided 5-question practice session with feedback.",
+        },
+        {
+          id: "career-cv-reference",
+          category: "Career",
+          subCategory: "CV, reference letter and LinkedIn",
+          keywords: [
+            "cv",
+            "resume",
+            "curriculum vitae",
+            "reference",
+            "reference letter",
+            "linkedin",
+            "profile",
+            "career",
+            "brand",
+            "job search",
+            "portfolio",
+            "application",
+          ],
+          content:
+            "YES gives you a pre-populated, editable CV and an auto-generated reference letter in month 12 (your supervisor's surveys and module completion feed the letter). On LinkedIn keep a professional tone, share career achievements and industry insights, never post confidential company or client information, and add a disclaimer that opinions are your own if your profile mentions CAPACITI.",
+        },
+        {
+          id: "career-after-programme",
+          category: "Career",
+          subCategory: "Getting a job after the programme",
+          keywords: [
+            "job",
+            "jobs",
+            "employment",
+            "permanent",
+            "guarantee",
+            "hired",
+            "placement",
+            "after programme",
+            "work",
+            "opportunities",
+            "career",
+            "sayouth",
+          ],
+          content:
+            "A permanent role after YES is at the sponsoring company's discretion and depends on their capacity and need. CAPACITI does not guarantee an internship or hosted employment placement. You leave with skills, a CV, a reference letter and certificates, and can look for opportunities through SAYouth.mobi.",
+        },
+        {
+          id: "general-what-is-capaciti",
+          category: "Programme & YES",
+          subCategory: "What is Capaciti",
+          keywords: ["capaciti", "general"],
+          content:
+            "Capaciti is the skills development arm of UVU Africa Group NPC, building Africa's future-ready workforce through learnerships, internships, workplace experience, and digital learning since 2010.",
+        },
+        {
+          id: "general-what-programmes-does-capaciti-offer",
+          category: "Programme & YES",
+          subCategory: "What programmes does Capaciti offer",
+          keywords: ["programmes", "capaciti", "offer", "general"],
+          content:
+            "Learnerships, Internships, Workplace Experience placements, Digital Learning courses, and NQF/QCTO-certified qualifications, depending on your track.",
+        },
+        {
+          id: "general-will-i-get-a-certification-at-the-end",
+          category: "Programme & YES",
+          subCategory: "Will I get a certification at the end",
+          keywords: ["get", "certification", "end", "general"],
+          content:
+            "Yes — depending on your programme, you may receive NQF/QCTO-certified qualifications and/or micro-credentials from partners like Coursera, Microsoft, AWS, Salesforce, or CompTIA.",
+        },
+        {
+          id: "general-i-can-t-find-an-answer-what-do-i-do",
+          category: "Contacts & Support",
+          subCategory: "I can't find an answer — what do I do",
+          keywords: ["find", "answer", "general"],
+          content:
+            "Type your question below. If I can't find a confident answer, it'll be logged and flagged to the team, who'll follow up with you directly.",
+        },
+        {
+          id: "partners-who-are-capaciti-s-partners",
+          category: "Programme & YES",
+          subCategory: "Who are Capaciti's partners",
+          keywords: ["capaciti", "partners"],
+          content:
+            "A wide network including Absa, Accenture, ADVICS, Anglo American, Ardagh Group, AWS, BSG, Coursera, JP Morgan, Microsoft, Naspers Lab, Old Mutual, Salesforce, SAP, Wipro, YES, and more.",
+        },
+        {
+          id: "partners-who-is-advics",
+          category: "Programme & YES",
+          subCategory: "Who is ADVICS",
+          keywords: ["advics", "partners"],
+          content:
+            "Part of the AISIN Group — a leading manufacturer of OE-quality automotive brake products for the aftermarket, with 30+ years of braking technology expertise.",
+        },
+        {
+          id: "alumni-directory-how-do-i-get-listed-in-the-alumni-directory",
+          category: "Programme & YES",
+          subCategory: "How do I get listed in the Alumni Directory",
+          keywords: ["get", "listed", "alumni", "directory"],
+          content:
+            "You're eligible once you've successfully completed your programme and received your completion certificate. Capaciti verifies your completion status against internal records before adding you.",
+        },
+        {
+          id: "alumni-directory-what-do-i-need-to-provide-for-alumni-verifi",
+          category: "Programme & YES",
+          subCategory: "What do I need to provide for alumni verification",
+          keywords: ["need", "provide", "alumni", "verification", "directory"],
+          content:
+            "Your full name, ID number (for matching against candidate records), completion certificate or reference letter, and confirmation of the cohort/programme you completed.",
+        },
+        {
+          id: "alumni-directory-how-long-does-alumni-verification-take",
+          category: "Programme & YES",
+          subCategory: "How long does alumni verification take",
+          keywords: ["long", "alumni", "verification", "take", "directory"],
+          content:
+            "It's checked against Capaciti's internal candidate records; turnaround depends on team capacity, and you'll be notified once your listing is confirmed.",
+        },
+        {
+          id: "alumni-directory-can-i-update-my-alumni-directory-details-la",
+          category: "Programme & YES",
+          subCategory: "Can I update my alumni directory details later",
+          keywords: ["update", "alumni", "directory", "details", "later"],
+          content:
+            "Yes — contact the Capaciti team with your updated info (e.g. new job title or employer) and they'll update your listing after verifying the request.",
+        },
+        {
+          id: "alumni-directory-who-do-i-contact-about-the-alumni-directory",
+          category: "Programme & YES",
+          subCategory: "Who do I contact about the alumni directory",
+          keywords: ["contact", "alumni", "directory"],
+          content:
+            "Email candidatehr@capaciti.org.za for verification queries or corrections.",
+        },
+        {
+          id: "programme-streams-what-streams-does-demand-academy-3-offer",
+          category: "Programme & YES",
+          subCategory: "What streams does Demand Academy 3 offer",
+          keywords: ["streams", "demand", "academy", "offer", "programme"],
+          content:
+            "Software Development, Data / Data Engineering, IT Support / Service Desk, and Network Support / Engineering.",
+        },
+        {
+          id: "programme-streams-what-does-the-software-development-stream-",
+          category: "Programme & YES",
+          subCategory: "What does the Software Development stream cover",
+          keywords: [
+            "software",
+            "development",
+            "stream",
+            "cover",
+            "programme",
+            "streams",
+          ],
+          content:
+            "Programming fundamentals (variables, loops, functions, conditions), programming languages, databases and APIs, software development and debugging, and hands-on coding projects.",
+        },
+        {
+          id: "programme-streams-what-does-the-data-data-engineering-stream",
+          category: "Programme & YES",
+          subCategory: "What does the Data / Data Engineering stream cover",
+          keywords: [
+            "data",
+            "engineering",
+            "stream",
+            "cover",
+            "programme",
+            "streams",
+          ],
+          content:
+            "Data and databases, basic SQL, data cleaning and analysis, ETL and data pipelines, and working with data using Excel, SQL, Python, or visualisation tools.",
+        },
+        {
+          id: "programme-streams-what-does-the-it-support-service-desk-stre",
+          category: "Programme & YES",
+          subCategory: "What does the IT Support / Service Desk stream cover",
+          keywords: [
+            "support",
+            "service",
+            "desk",
+            "stream",
+            "cover",
+            "programme",
+            "streams",
+          ],
+          content:
+            "Computer hardware and operating systems, basic networking (IP, Wi-Fi, DNS, DHCP), troubleshooting common issues, IT support/service desk concepts, and basic cybersecurity awareness.",
+        },
+        {
+          id: "programme-streams-what-does-the-network-support-engineering-",
+          category: "Programme & YES",
+          subCategory:
+            "What does the Network Support / Engineering stream cover",
+          keywords: [
+            "network",
+            "support",
+            "engineering",
+            "stream",
+            "cover",
+            "programme",
+            "streams",
+          ],
+          content:
+            "LAN vs WAN, IP addresses, routers/switches/Wi-Fi, DNS and DHCP, basic TCP/IP concepts, and network troubleshooting using commands such as ping and ipconfig.",
+        },
+        {
+          id: "offer-agreements-what-documents-will-i-need-to-sign-when-i-j",
+          category: "Programme & YES",
+          subCategory: "What documents will I need to sign when I join",
+          keywords: [
+            "documents",
+            "need",
+            "sign",
+            "join",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "Your Offer of Employment letter, a Declaration form, a Sworn Affidavit for Beneficiaries, and the Beneficiary Agreement (with its annexures on your details, programme specifics, and background-check consent).",
+        },
+        {
+          id: "offer-agreements-what-does-the-offer-of-employment-letter-co",
+          category: "Programme & YES",
+          subCategory: "What does the Offer of Employment letter cover",
+          keywords: ["offer", "employment", "letter", "cover", "agreements"],
+          content:
+            "It confirms your selection into a stream (Software Development, Data Engineering, IT Support, or Network Support), the 3-stage structure — bootcamp, applied learning, then hosted employment — plus your commencement date, training duration, stipend, and training location.",
+        },
+        {
+          id: "offer-agreements-what-are-the-conditions-of-my-offer",
+          category: "Programme & YES",
+          subCategory: "What are the conditions of my offer",
+          keywords: ["conditions", "offer", "agreements"],
+          content:
+            "You must be currently unemployed and never previously on a SETA-funded programme, aged 18–35, free of obligations that would block your start date, pass MIE verification, sign the Beneficiary Agreement, and accept the Code of Conduct.",
+        },
+        {
+          id: "offer-agreements-what-s-the-stipend-and-start-date-for-the-d",
+          category: "Programme & YES",
+          subCategory:
+            "What's the stipend and start date for the Demand Academy Programme",
+          keywords: [
+            "stipend",
+            "start",
+            "date",
+            "demand",
+            "academy",
+            "programme",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "A gross stipend of R5,241 per month, commencing 14 September 2026 at CAPACITI's Hollard Campus, 19 Ameshoff/Ameshof St, Braamfontein — 1 month bootcamp before stream placement.",
+        },
+        {
+          id: "offer-agreements-what-is-the-declaration-form-for",
+          category: "Programme & YES",
+          subCategory: "What is the Declaration form for",
+          keywords: ["declaration", "form", "offer", "agreements"],
+          content:
+            "You declare that your CV and application info is true and correct, and consent to your ID, qualifications, criminal record, and (where relevant) credit record being externally verified. You must submit supporting documents within 1 day of starting, or your completion certificate is withheld.",
+        },
+        {
+          id: "offer-agreements-what-happens-if-my-declaration-turns-out-to",
+          category: "Programme & YES",
+          subCategory: "What happens if my declaration turns out to be false",
+          keywords: [
+            "happens",
+            "declaration",
+            "turns",
+            "out",
+            "false",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "If any information you provided proves false, or you're found to have misrepresented yourself or CAPACITI, you can be removed from the programme.",
+        },
+        {
+          id: "offer-agreements-what-is-the-sworn-affidavit-for-beneficiari",
+          category: "Programme & YES",
+          subCategory: "What is the Sworn Affidavit for Beneficiaries",
+          keywords: [
+            "sworn",
+            "affidavit",
+            "beneficiaries",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "A commissioner-of-oaths affidavit confirming your demographic details and employment status, plus consent for your info/image/testimonials to be used for marketing and shared with funders and partners under POPIA — you can withdraw that consent later in writing, though it may affect your participation.",
+        },
+        {
+          id: "offer-agreements-what-is-the-beneficiary-agreement",
+          category: "Programme & YES",
+          subCategory: "What is the Beneficiary Agreement",
+          keywords: ["beneficiary", "agreement", "offer", "agreements"],
+          content:
+            "The formal contract between you and CAPACITI (a division of UVU Africa NPC) covering your obligations, warranties, data-sharing consent, termination terms, and liability limits. Annexure A holds your personal details, Annexure B the programme specifics, and Annexure C your consent for background screening.",
+        },
+        {
+          id: "offer-agreements-what-s-my-notice-period-during-the-programm",
+          category: "Programme & YES",
+          subCategory: "What's my notice period during the programme",
+          keywords: [
+            "notice",
+            "period",
+            "during",
+            "programme",
+            "offer",
+            "agreements",
+          ],
+          content: "14 days while you're participating in the Programme.",
+        },
+        {
+          id: "offer-agreements-does-capaciti-guarantee-me-a-job-at-the-end",
+          category: "Programme & YES",
+          subCategory: "Does CAPACITI guarantee me a job at the end",
+          keywords: [
+            "capaciti",
+            "guarantee",
+            "job",
+            "end",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "No — the Beneficiary Agreement is explicit that there's no guarantee of an internship or hosted employment placement, and your participation is at your own risk with no liability to CAPACITI for loss or harm during training.",
+        },
+        {
+          id: "offer-agreements-will-my-personal-information-be-shared-afte",
+          category: "Programme & YES",
+          subCategory:
+            "Will my personal information be shared after I finish the programme",
+          keywords: [
+            "personal",
+            "information",
+            "shared",
+            "after",
+            "finish",
+            "programme",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "Yes — CAPACITI can share your employment/contact updates with funders for up to 5 years to track programme impact, and you're required to notify them of any employment status changes during that period. Data is shared in aggregated/anonymised form where possible.",
+        },
+        {
+          id: "offer-agreements-what-happens-if-i-breach-the-beneficiary-ag",
+          category: "Programme & YES",
+          subCategory: "What happens if I breach the Beneficiary Agreement",
+          keywords: [
+            "happens",
+            "breach",
+            "beneficiary",
+            "agreement",
+            "offer",
+            "agreements",
+          ],
+          content:
+            "Either party can terminate for material breach if it isn't fixed within 10 business days of being notified. Failing to attend training, submit work, or meet minimum marks can also lead to suspension or expulsion at the Programme Provider's discretion.",
+        },
+        {
+          id: "offer-agreements-who-signs-the-beneficiary-agreement-on-capa",
+          category: "Programme & YES",
+          subCategory: "Who signs the Beneficiary Agreement on CAPACITI's side",
+          keywords: [
+            "signs",
+            "beneficiary",
+            "agreement",
+            "capaciti",
+            "side",
+            "offer",
+            "agreements",
+          ],
+          content: "Chanél Oldfield, Chief Executive of CAPACITI.",
+        },
+      ];
+
+      /* ===================== CAPACITI BUDDY — conversational engine ===================== */
+
+      const log = document.getElementById("log");
+      let lastCategory = null;
+      let history = [];
+      let busy = false;
+      let lastUserQuery = null;
+      let sampleNS = null,
+        sampleChecked = false;
+      let lastChunks = [];
+      const USERS_KEY = "capaciti_buddy_users_v1";
+      const AUTH_KEY = "capaciti_buddy_active_email";
+      let currentEmail = null,
+        currentUser = null;
+      function loadUsers() {
+        try {
+          return JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
+        } catch (e) {
+          return {};
+        }
+      }
+      function saveUsers(u) {
+        try {
+          localStorage.setItem(USERS_KEY, JSON.stringify(u));
+        } catch (e) {}
+      }
+      function convKey() {
+        return "capaciti_buddy_conversations_v1_" + currentEmail;
+      }
+      function activeConvIdKey() {
+        return "capaciti_buddy_active_id_" + currentEmail;
+      }
+      function signinsKey() {
+        return "cb_signins_" + currentEmail;
+      }
+      let conversations = [];
+      let activeId = null;
+      function loadConversations() {
+        try {
+          const raw = localStorage.getItem(convKey());
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveConversations() {
+        try {
+          localStorage.setItem(
+            convKey(),
+            JSON.stringify(conversations.slice(0, 50)),
+          );
+        } catch (e) {
+          /* storage unavailable — chat still works, just won't persist */
+        }
+      }
+      function setActiveId(id) {
+        activeId = id;
+        try {
+          localStorage.setItem(activeConvIdKey(), id);
+        } catch (e) {}
+      }
+      function makeId() {
+        return "c" + Date.now() + Math.random().toString(36).slice(2, 7);
+      }
+      function titleFor(text) {
+        text = (text || "New chat").trim().replace(/\s+/g, " ");
+        return text.length > 34 ? text.slice(0, 34) + "…" : text;
+      }
+      function persistCurrent() {
+        let conv = conversations.find((c) => c.id === activeId);
+        if (!conv) {
+          conv = {
+            id: activeId,
+            title: "New chat",
+            messages: [],
+            updatedAt: Date.now(),
+          };
+        }
+        conv.messages = history.map((h) => ({
+          who: h.who,
+          text: h.text,
+          cat: h.cat || null,
+        }));
+        const firstUser = history.find((h) => h.who === "user");
+        if (firstUser) conv.title = titleFor(firstUser.text);
+        conv.updatedAt = Date.now();
+        conversations = conversations.filter((c) => c.id !== conv.id);
+        conversations.unshift(conv);
+        saveConversations();
+        renderChatList();
+      }
+      function pushHistory(who, text, cat) {
+        history.push({ who, text, cat: cat || null });
+        persistCurrent();
+      }
+
+      /* ---- rendering ---- */
+      function addMsg(text, who, cat) {
+        const row = document.createElement("div");
+        row.className = "row " + who;
+        const m = document.createElement("div");
+        m.className = "msg " + who;
+        if (who === "bot")
+          m.innerHTML =
+            (cat
+              ? '<span class="cat-tag">' + escapeHtml(cat) + "</span><br>"
+              : "") + formatRich(text);
+        else m.textContent = text;
+        if (who === "bot") {
+          const av = document.createElement("div");
+          av.className = "avatar";
+          av.textContent = "CB";
+          row.appendChild(av);
+        }
+        row.appendChild(m);
+        log.appendChild(row);
+        log.scrollTop = log.scrollHeight;
+        return row;
+      }
+      function renderSuggestions(list) {
+        const wrap = document.createElement("div");
+        wrap.className = "suggestions";
+        list.forEach((q) => {
+          const p = document.createElement("button");
+          p.className = "sugg-pill";
+          p.textContent = q;
+          p.onclick = () => {
+            document.getElementById("q").value = q;
+            handleSend();
+          };
+          wrap.appendChild(p);
+        });
+        log.appendChild(wrap);
+        log.scrollTop = log.scrollHeight;
+      }
+      function showTyping() {
+        const row = document.createElement("div");
+        row.className = "row bot";
+        row.id = "typingRow";
+        const av = document.createElement("div");
+        av.className = "avatar";
+        av.textContent = "CB";
+        const t = document.createElement("div");
+        t.className = "msg bot typing";
+        t.innerHTML = "<span></span><span></span><span></span>";
+        row.appendChild(av);
+        row.appendChild(t);
+        log.appendChild(row);
+        log.scrollTop = log.scrollHeight;
+      }
+      function hideTyping() {
+        const r = document.getElementById("typingRow");
+        if (r) r.remove();
+      }
+      function escapeHtml(s) {
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function formatRich(text) {
+        let s = escapeHtml(text || "");
+        s = s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+        const lines = s.split("\n");
+        let html = "",
+          inUl = false,
+          inOl = false;
+        lines.forEach((line) => {
+          const bullet = /^\s*[-•]\s+(.*)/.exec(line);
+          const numbered = /^\s*\d+[.)]\s+(.*)/.exec(line);
+          if (bullet) {
+            if (inOl) {
+              html += "</ol>";
+              inOl = false;
+            }
+            if (!inUl) {
+              html += "<ul>";
+              inUl = true;
+            }
+            html += "<li>" + bullet[1] + "</li>";
+          } else if (numbered) {
+            if (inUl) {
+              html += "</ul>";
+              inUl = false;
+            }
+            if (!inOl) {
+              html += "<ol>";
+              inOl = true;
+            }
+            html += "<li>" + numbered[1] + "</li>";
+          } else {
+            if (inUl) {
+              html += "</ul>";
+              inUl = false;
+            }
+            if (inOl) {
+              html += "</ol>";
+              inOl = false;
+            }
+            html += line.trim() === "" ? "<br>" : "<div>" + line + "</div>";
+          }
+        });
+        if (inUl) html += "</ul>";
+        if (inOl) html += "</ol>";
+        return html;
+      }
+
+      /* ============ knowledgeRetriever.js (embedded, zero dependencies) ============
+         Tokenise -> score every chunk -> return the top 1-2 chunks above a minimum score.
+         keyword match = 3x, category/subCategory match = 2x, content match = 1x.       */
+      const KnowledgeRetriever = (function (kb) {
+        const MIN_SCORE = 3; // a single keyword hit qualifies; a lone content hit does not
+        const MAX_RESULTS = 2; // never send more than two chunks to the model
+        const SECOND_RATIO = 0.7; // 2nd chunk must score at least 70% of the best one
+        const STOP = new Set(
+          (
+            "the and for are you your can how what who when where does with from have has this that not " +
+            "a an of to in on is it my me i do did will would should could be am was were there their about please tell explain " +
+            "help need want know any some get just also if so or at by as into than then us we our they them he she his her its " +
+            "which why much many let lets im ive don doesn didn isn won cant dont"
+          ).split(" "),
+        );
+        // common alternative phrasings -> vocabulary used in the knowledge base
+        const SYN = {
+          stipend: "salary pay payment",
+          salary: "stipend pay payment",
+          pay: "stipend salary payment",
+          paid: "stipend salary payment",
+          money: "stipend salary pay",
+          wage: "salary pay",
+          boss: "manager supervisor",
+          supervisor: "manager",
+          teacher: "coach mentor",
+          lecturer: "coach mentor",
+          fired: "dismissal disciplinary misconduct",
+          sacked: "dismissal disciplinary misconduct",
+          dismissed: "dismissal disciplinary misconduct",
+          late: "lateness timekeeping attendance",
+          sick: "absence leave",
+          ill: "absence leave",
+          off: "leave absence",
+          leave: "absence hr",
+          clothes: "dress attire clothing",
+          clothing: "dress attire",
+          outfit: "dress attire clothing",
+          wear: "dress attire clothing",
+          jeans: "dress attire ripped",
+          weed: "cannabis marijuana drugs",
+          dagga: "cannabis marijuana drugs",
+          drunk: "alcohol intoxicated",
+          booze: "alcohol liquor",
+          beer: "alcohol liquor",
+          gun: "firearm weapon",
+          knife: "weapon knives",
+          fight: "assault abuse",
+          hit: "assault",
+          swear: "abusive language",
+          rude: "abusive insubordination",
+          phone: "cellphone",
+          whatsapp: "cellphone social media",
+          instagram: "social media",
+          facebook: "social media",
+          tiktok: "social media",
+          twitter: "social media",
+          firstaid: "first aid",
+          hurt: "first aid injury",
+          injured: "first aid injury",
+          fire: "marshal",
+          counsellor: "counselling wellbeing",
+          stressed: "wellbeing mental stress",
+          depressed: "wellbeing mental",
+          anxious: "wellbeing mental anxiety",
+          burnout: "wellbeing mental stress",
+          sad: "wellbeing mental",
+          resume: "cv",
+          passwords: "password",
+          password: "reset login",
+          login: "password access",
+          app: "yes one app",
+          itsupport: "it technical systems",
+          sherep: "she safety rep",
+          quit: "resign absence abscondment",
+          resign: "notice programme",
+          internship: "programme",
+          learnership: "programme",
+          complain: "complaint grievance",
+          report: "complaint grievance",
+          grievance: "complaint hr",
+        };
+        function stem(w) {
+          if (w.length > 5 && w.endsWith("ing")) return w.slice(0, -3);
+          if (w.length > 4 && w.endsWith("ies")) return w.slice(0, -3) + "y";
+          if (w.length > 4 && w.endsWith("ed")) return w.slice(0, -2);
+          if (
+            w.length > 3 &&
+            w.endsWith("s") &&
+            !w.endsWith("ss") &&
+            !w.endsWith("us")
+          )
+            return w.slice(0, -1);
+          return w;
+        }
+        function words(text) {
+          return String(text || "")
+            .replace(/\bIT\b/g, "itsupport")
+            .replace(/\bSHE\b/g, "sherep") // keep IT / SHE from being dropped as stop words
+            .replace(
+              /\bit\s+(support|issues?|problems?|systems?|desk|access|department|team)\b/gi,
+              "itsupport $1",
+            )
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, " ")
+            .split(/\s+/)
+            .filter((w) => (w.length > 1 || /\d/.test(w)) && !STOP.has(w));
+        }
+        // Step 1 - tokenisation: lowercase, strip punctuation, drop stop words (+ light stemming)
+        function tokenize(text) {
+          return words(text).map(stem);
+        }
+        function levenshtein(a, b) {
+          if (Math.abs(a.length - b.length) > 1) return 9;
+          const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+          for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+          for (let i = 1; i <= a.length; i++)
+            for (let j = 1; j <= b.length; j++)
+              dp[i][j] =
+                a[i - 1] === b[j - 1]
+                  ? dp[i - 1][j - 1]
+                  : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+          return dp[a.length][b.length];
+        }
+        const norm = (s) =>
+          " " +
+          String(s)
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim() +
+          " ";
+        // index once at load time
+        const index = kb.map((c) => ({
+          c,
+          kw: new Set(tokenize(c.keywords.join(" "))),
+          kwArr: [...new Set(tokenize(c.keywords.join(" ")))].filter(
+            (t) => t.length >= 5,
+          ),
+          cat: new Set(tokenize(c.category + " " + c.subCategory)),
+          body: new Set(tokenize(c.content)),
+          phrases: c.keywords.filter((k) => k.trim().includes(" ")).map(norm),
+        }));
+        function scoreChunk(q, nq, ix) {
+          let score = 0;
+          q.forEach(({ t, w }) => {
+            let s = 0;
+            if (ix.kw.has(t))
+              s += 3; // keywords: 3x
+            else if (
+              t.length >= 5 &&
+              ix.kwArr.some((k) => levenshtein(t, k) <= 1)
+            )
+              s += 2; // typo tolerance
+            if (ix.cat.has(t)) s += 2; // category / subCategory: 2x
+            if (ix.body.has(t)) s += 1; // content: 1x
+            score += s * w;
+          });
+          ix.phrases.forEach((p) => {
+            if (nq.includes(p)) score += 2;
+          }); // exact multi-word keyword phrase
+          return score;
+        }
+        // Steps 2+3 - relevance scoring and chunk filtering
+        function run(query) {
+          const exactQuery = String(query || "")
+            .trim()
+            .toLowerCase();
+
+          // Broad programme queries should return the general programme overview
+          const isBroadProgrammeQuery =
+            exactQuery === "programme" ||
+            exactQuery === "program" ||
+            exactQuery === "tell me about the programme" ||
+            exactQuery === "tell me more about the programme" ||
+            exactQuery === "tell me about my programme" ||
+            exactQuery === "tell me more about my programme" ||
+            exactQuery === "what is the programme" ||
+            exactQuery === "what is my programme" ||
+            exactQuery === "give me an overview of the programme";
+
+          if (isBroadProgrammeQuery) {
+            const overview = kb.find(
+              (c) => c.id === "programme-learning-journey-overview",
+            );
+
+            if (overview) {
+              return [
+                {
+                  id: overview.id,
+                  category: overview.category,
+                  subCategory: overview.subCategory,
+                  content: overview.content,
+                  score: 100,
+                },
+              ];
+            }
+          }
+
+          const own = new Set(tokenize(query));
+          const q = [...own].map((t) => ({ t, w: 1 }));
+
+          words(query).forEach((w) => {
+            if (SYN[w]) {
+              SYN[w].split(" ").forEach((x) => {
+                const t = stem(x);
+
+                if (!own.has(t)) {
+                  own.add(t);
+                  q.push({ t, w: 0.7 });
+                }
+              });
+            }
+          });
+
+          if (!q.length) return [];
+
+          const nq = norm(query);
+
+          const ranked = index
+            .map((ix) => ({
+              c: ix.c,
+              score: Math.round(scoreChunk(q, nq, ix) * 10) / 10,
+            }))
+            .filter((r) => r.score >= MIN_SCORE)
+            .sort((a, b) => b.score - a.score);
+
+          if (!ranked.length) return [];
+
+          const best = ranked[0].score;
+
+          return ranked
+            .filter((r, i) => i === 0 || r.score >= best * SECOND_RATIO)
+            .slice(0, MAX_RESULTS)
+            .map((r) => ({
+              id: r.c.id,
+              category: r.c.category,
+              subCategory: r.c.subCategory,
+              content: r.c.content,
+              score: r.score,
+            }));
+        }
+        // retrieve(query, {lastChunks}) -> [] when nothing relevant. A short, clearly referential follow-up
+        // ("and the men?") that matches nothing on its own reuses the chunks from the previous answer.
+        function retrieve(query, opts) {
+          const hits = run(query);
+          console.log("QUERY:", query);
+          console.log("RETRIEVER HITS:", hits);
+          if (
+            !hits.length &&
+            opts &&
+            opts.lastChunks &&
+            opts.lastChunks.length &&
+            FOLLOWUP.test(query) &&
+            tokenize(query).length <= 5
+          )
+            return opts.lastChunks.map((c) =>
+              Object.assign({}, c, { score: 0, followUp: true }),
+            );
+          return hits;
+        }
+        const FOLLOWUP =
+          /\b(what about|how about|and|also|what if|that|those|them|it|this|these|more|else|another|other|why|same|too|instead)\b/i; // only treat clearly-referential questions as follow-ups
+        const byId = (id) => kb.find((c) => c.id === id) || null;
+        const categories = () => [...new Set(kb.map((c) => c.category))];
+        const topics = (cat, n) =>
+          kb.filter((c) => c.category === cat).slice(0, n || 10);
+        return {
+          retrieve,
+          tokenize,
+          byId,
+          categories,
+          topics,
+          MIN_SCORE,
+          MAX_RESULTS,
+        };
+      })(KNOWLEDGE_BASE);
+      /* ============ end knowledgeRetriever.js ============ */
+
+      /* ---- small talk ---- */
+      function smalltalk(query) {
+        const s = query.toLowerCase().trim();
+        if (
+          /^(hi|hello|hey|howzit|sawubona|molo|good (morning|afternoon|evening))\b/.test(
+            s,
+          )
+        )
+          return "Hey there! 👋 Ask me anything about the Code of Conduct, house rules, the YES programme, contacts, partners, or CAPACITI life in general.";
+        if (s.length < 40 && /thank|thanks|thx|cheers/.test(s))
+          return "Anytime! Let me know if there's anything else you need. 🙌";
+        if (/^(bye|goodbye|see ya|later)\b/.test(s))
+          return "Take care! Come back anytime you've got a question. 👋";
+        if (/^(what can you (do|help)|who are you)\b|^help(\s+me)?\??$/.test(s))
+          return 'I\'m CAPACITI Buddy — ask me things like "what happens if I\'m absent?", "how do I reset my YES password?", or "who do I contact for IT issues?" and I\'ll do my best to help.';
+        return null;
+      }
+
+      /* ---- conversation flow ---- */
+      document.getElementById("send").onclick = handleSend;
+      const qEl = document.getElementById("q");
+      function autosize() {
+        qEl.style.height = "auto";
+        qEl.style.height = Math.min(qEl.scrollHeight, 120) + "px";
+      }
+      qEl.addEventListener("input", autosize);
+      // Enter sends, Shift+Enter inserts a new line
+      qEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+      document.getElementById("newChatBtn").onclick = startNewChat;
+      document
+        .getElementById("chatSearch")
+        .addEventListener("input", renderChatList);
+
+      /* ---- desktop sidebar + context panel ---- */
+      function setActiveNav(key) {
+        document
+          .querySelectorAll(".side-link[data-nav]")
+          .forEach((b) => b.classList.toggle("active", b.dataset.nav === key));
+      }
+      document.querySelectorAll(".side-link[data-nav]").forEach((b) => {
+        b.onclick = () => {
+          const nav = b.dataset.nav;
+          if (nav === "appearance") {
+            document.getElementById("themeBtn").click();
+            return;
+          }
+          if (nav === "profile") {
+            document.getElementById("logoBtn").click();
+            return;
+          }
+          setActiveNav(nav);
+          if (nav === "home") {
+            startNewChat();
+          } else if (nav === "buddy") {
+            document.getElementById("q").focus();
+          } else if (nav === "learning") {
+            startLearningMenu();
+          } else if (nav === "career") {
+            document.getElementById("q").value =
+              "Help me prepare for interviews and improve my CV";
+            handleSend();
+          } else if (nav === "wellness") {
+            document.getElementById("q").value =
+              "What wellness and support resources are available?";
+            handleSend();
+          } else if (nav === "dashboard") {
+            renderDashboard();
+          }
+        };
+      });
+      document.querySelectorAll(".ctx-card[data-ctx]").forEach((b) => {
+        b.onclick = (e) => {
+          e.preventDefault();
+          const c = b.dataset.ctx;
+          if (c === "interview") {
+            startMockInterview();
+          } else if (c === "studyplan") {
+            askLearningTopic("studyplan");
+          } else if (c === "cv") {
+            document.getElementById("q").value = "Help me build my CV";
+            handleSend();
+          } else if (c === "wellness") {
+            document.getElementById("q").value =
+              "What wellness and support resources are available?";
+            handleSend();
+          }
+        };
+      });
+      document.getElementById("logoBtn").onclick = (e) => {
+        e.stopPropagation();
+        document.getElementById("themePanel").classList.remove("open");
+        document.getElementById("chatPanel").classList.toggle("open");
+      };
+
+      /* ---- daily sign-in ---- */
+      function todayKey() {
+        return new Date().toISOString().slice(0, 10);
+      }
+      function getSignins() {
+        try {
+          return JSON.parse(localStorage.getItem(signinsKey()) || "{}");
+        } catch (e) {
+          return {};
+        }
+      }
+      function updateSigninButton() {
+        const records = getSignins();
+        document
+          .getElementById("signinBtn")
+          .classList.toggle("signed", !!records[todayKey()]);
+      }
+      function signIn() {
+        const records = getSignins();
+        const key = todayKey();
+        const now = new Date();
+        let replyText;
+        if (records[key]) {
+          replyText = `You're already signed in for today at ${records[key]}. See you on the floor!`;
+        } else {
+          const timeStr = now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          records[key] = timeStr;
+          try {
+            localStorage.setItem(signinsKey(), JSON.stringify(records));
+          } catch (e) {}
+          const cutoff = new Date(now);
+          cutoff.setHours(8, 30, 0, 0);
+          replyText =
+            now > cutoff
+              ? `✅ Signed in at ${timeStr}. That's after our 08:30 cutoff, so please give your manager a quick heads-up too.`
+              : `✅ Signed in at ${timeStr}. Have a great day!`;
+        }
+        addMsg("📍 Sign in", "user");
+        pushHistory("user", "📍 Sign in");
+        addMsg(replyText, "bot");
+        pushHistory("bot", replyText);
+        updateSigninButton();
+        log.scrollTop = log.scrollHeight;
+      }
+      document.getElementById("signinBtn").onclick = signIn;
+      updateSigninButton();
+
+      /* ---- appearance: light/dark mode + colour themes ---- */
+      const THEMES = {
+        capaciti: {
+          purple: "#5B2A9E",
+          purpleDk: "#402072",
+          navy: "#1B1F3B",
+          orange: "#EE6C4D",
+        },
+        ocean: {
+          purple: "#0E7C86",
+          purpleDk: "#0B5C63",
+          navy: "#0A2E36",
+          orange: "#F2A65A",
+        },
+        sunset: {
+          purple: "#C2417A",
+          purpleDk: "#8E2A58",
+          navy: "#2E1A3A",
+          orange: "#FFB238",
+        },
+        forest: {
+          purple: "#2E7D4F",
+          purpleDk: "#1F5B38",
+          navy: "#12261C",
+          orange: "#E0A93E",
+        },
+      };
+      function applyTheme(name) {
+        const t = THEMES[name] ? name : "capaciti";
+        const c = THEMES[t];
+        const root = document.documentElement;
+        root.style.setProperty("--purple", c.purple);
+        root.style.setProperty("--purple-dk", c.purpleDk);
+        root.style.setProperty("--navy", c.navy);
+        root.style.setProperty("--orange", c.orange);
+        document
+          .querySelectorAll(".swatch")
+          .forEach((s) => s.classList.toggle("active", s.dataset.theme === t));
+        try {
+          localStorage.setItem("cb_theme", t);
+        } catch (e) {}
+      }
+      function applyMode(mode) {
+        const m = ["auto", "light", "dark"].includes(mode) ? mode : "auto";
+        if (m === "light")
+          document.documentElement.setAttribute("data-theme", "light");
+        else if (m === "dark")
+          document.documentElement.setAttribute("data-theme", "dark");
+        else document.documentElement.removeAttribute("data-theme");
+        document
+          .querySelectorAll(".mode-btn")
+          .forEach((b) => b.classList.toggle("active", b.dataset.mode === m));
+        try {
+          localStorage.setItem("cb_mode", m);
+        } catch (e) {}
+      }
+      document.querySelectorAll(".mode-btn").forEach((b) => {
+        b.onclick = () => applyMode(b.dataset.mode);
+      });
+      document.querySelectorAll(".swatch").forEach((b) => {
+        b.onclick = () => applyTheme(b.dataset.theme);
+      });
+      document.getElementById("themeBtn").onclick = (e) => {
+        e.stopPropagation();
+        document.getElementById("chatPanel").classList.remove("open");
+        document.getElementById("themePanel").classList.toggle("open");
+      };
+      document.addEventListener("click", (e) => {
+        const tp = document.getElementById("themePanel");
+        if (
+          tp.classList.contains("open") &&
+          !tp.contains(e.target) &&
+          !e.target.closest("#themeBtn")
+        )
+          tp.classList.remove("open");
+        const cp = document.getElementById("chatPanel");
+        if (
+          cp.classList.contains("open") &&
+          !cp.contains(e.target) &&
+          !e.target.closest("#logoBtn")
+        )
+          cp.classList.remove("open");
+      });
+      let savedMode = "auto",
+        savedTheme = "capaciti";
+      try {
+        savedMode = localStorage.getItem("cb_mode") || "auto";
+      } catch (e) {}
+      try {
+        savedTheme = localStorage.getItem("cb_theme") || "capaciti";
+      } catch (e) {}
+      applyMode(savedMode);
+      applyTheme(savedTheme);
+
+      function renderHomeCards() {
+        const l1 = document.createElement("div");
+        l1.className = "home-label";
+        l1.textContent = "My CAPACITI journey";
+        log.appendChild(l1);
+        const grid = document.createElement("div");
+        grid.className = "home-cards";
+        [
+          [
+            "🎓",
+            "Programme",
+            "Programme overview",
+            "Tell me about my programme",
+          ],
+          ["💻", "Learning", "Learn, practise, quiz & plan", null],
+          [
+            "💼",
+            "Career",
+            "CV, interviews & work exp",
+            "Help me prepare for interviews and improve my CV",
+          ],
+          [
+            "🚀",
+            "Workplace",
+            "Etiquette & professionalism",
+            "Explain workplace etiquette and professional behaviour",
+          ],
+          [
+            "❤️",
+            "Wellness",
+            "Support & wellbeing",
+            "What wellness and support resources are available?",
+          ],
+        ].forEach(([icon, title, desc, q]) => {
+          const b = document.createElement("button");
+          b.className = "jcard";
+          b.innerHTML = `<span class="jc-icon">${icon}</span><span class="jc-title">${title}</span><span class="jc-desc">${desc}</span>`;
+          b.onclick = () => {
+            if (q === null) {
+              startLearningMenu();
+            } else {
+              document.getElementById("q").value = q;
+              handleSend();
+            }
+          };
+          grid.appendChild(b);
+        });
+        log.appendChild(grid);
+        const l2 = document.createElement("div");
+        l2.className = "home-label";
+        l2.textContent = "Your next step";
+        log.appendChild(l2);
+        const strip = document.createElement("div");
+        strip.className = "next-steps";
+        [
+          ["🧭", "Orientation", "What's expected of me as a candidate?"],
+          ["📊", "My Journey", null, "dashboard"],
+          ["📚", "Learning mode", null, "learning"],
+          ["✅", "Assessments", "How do I check my learning progress?"],
+          ["📄", "Build your CV", "Help me build my CV"],
+          ["🎤", "Mock interview", null, "interview"],
+          [
+            "🏢",
+            "Workplace exp.",
+            "What should I know before hosted employment placement?",
+          ],
+        ].forEach(([icon, label, q, special]) => {
+          const c = document.createElement("button");
+          c.className = "step-chip";
+          c.innerHTML = `${icon} ${label}`;
+          c.onclick = () => {
+            if (special === "interview") {
+              startMockInterview();
+            } else if (special === "learning") {
+              startLearningMenu();
+            } else if (special === "dashboard") {
+              renderDashboard();
+            } else {
+              document.getElementById("q").value = q;
+              handleSend();
+            }
+          };
+          strip.appendChild(c);
+        });
+        log.appendChild(strip);
+        log.scrollTop = log.scrollHeight;
+      }
+      function showGreeting() {
+        const first =
+          currentUser && currentUser.name
+            ? currentUser.name.trim().split(/\s+/)[0]
+            : null;
+        const hello = first
+          ? `Hi ${first} 👋 I'm CAPACITI Buddy.`
+          : "Hi 👋 I'm CAPACITI Buddy.";
+        addMsg(
+          `${hello} I can help you navigate your CAPACITI journey — programme info, learning, career prep, workplace readiness and wellness support. Ask me anything, or pick a place to start below.`,
+          "bot",
+        );
+        renderHomeCards();
+      }
+      function loadConversationIntoView(conv) {
+        log.innerHTML = "";
+        history = [];
+        lastCategory = null;
+        lastChunks = [];
+        if (conv.messages && conv.messages.length) {
+          conv.messages.forEach((m) => {
+            addMsg(m.text, m.who, m.cat || undefined);
+            history.push({ who: m.who, text: m.text, cat: m.cat || null });
+          });
+          const lastBotWithCat = [...conv.messages]
+            .reverse()
+            .find((m) => m.who === "bot" && m.cat && m.cat !== "Not sure");
+          lastCategory = lastBotWithCat ? lastBotWithCat.cat : null;
+          log.scrollTop = log.scrollHeight;
+        } else {
+          showGreeting();
+        }
+      }
+      function startNewChat() {
+        const id = makeId();
+        conversations.unshift({
+          id,
+          title: "New chat",
+          messages: [],
+          updatedAt: Date.now(),
+        });
+        saveConversations();
+        setActiveId(id);
+        log.innerHTML = "";
+        history = [];
+        lastCategory = null;
+        lastChunks = [];
+        showGreeting();
+        renderChatList();
+        document.getElementById("chatPanel").classList.remove("open");
+      }
+      function switchConversation(id) {
+        document.getElementById("chatPanel").classList.remove("open");
+        if (id === activeId) return;
+        const conv = conversations.find((c) => c.id === id);
+        if (!conv) return;
+        setActiveId(id);
+        loadConversationIntoView(conv);
+        renderChatList();
+      }
+      function deleteConversation(id) {
+        conversations = conversations.filter((c) => c.id !== id);
+        saveConversations();
+        if (id === activeId) {
+          const next = conversations
+            .slice()
+            .sort((a, b) => b.updatedAt - a.updatedAt)[0];
+          if (next) {
+            setActiveId(next.id);
+            loadConversationIntoView(next);
+          } else {
+            startNewChat();
+            return;
+          }
+        }
+        renderChatList();
+      }
+      function fmtWhen(ts) {
+        const d = new Date(ts),
+          now = new Date();
+        const sameDay = d.toDateString() === now.toDateString();
+        return sameDay
+          ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          : d.toLocaleDateString([], { month: "short", day: "numeric" });
+      }
+      function renderChatList() {
+        const listEl = document.getElementById("chatList");
+        const q = (document.getElementById("chatSearch")?.value || "")
+          .trim()
+          .toLowerCase();
+        let items = conversations
+          .slice()
+          .sort((a, b) => b.updatedAt - a.updatedAt);
+        if (q)
+          items = items.filter(
+            (c) =>
+              (c.title || "").toLowerCase().includes(q) ||
+              (c.messages || []).some((m) =>
+                (m.text || "").toLowerCase().includes(q),
+              ),
+          );
+        if (!items.length) {
+          listEl.innerHTML =
+            '<div class="chat-empty">' +
+            (q ? "No matching chats" : "No previous chats yet") +
+            "</div>";
+          return;
+        }
+        listEl.innerHTML = "";
+        items.forEach((c) => {
+          const item = document.createElement("div");
+          item.className = "chat-item" + (c.id === activeId ? " active" : "");
+          item.title = fmtWhen(c.updatedAt);
+          item.tabIndex = 0;
+          item.setAttribute("role", "button");
+          item.setAttribute(
+            "aria-label",
+            "Open chat: " + (c.title || "New chat"),
+          );
+          item.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              switchConversation(c.id);
+            }
+          });
+          const t = document.createElement("span");
+          t.className = "ci-title";
+          t.textContent = c.title || "New chat";
+          const del = document.createElement("button");
+          del.className = "ci-del";
+          del.textContent = "✕";
+          del.title = "Delete chat";
+          del.setAttribute(
+            "aria-label",
+            "Delete chat: " + (c.title || "New chat"),
+          );
+          del.onclick = (e) => {
+            e.stopPropagation();
+            deleteConversation(c.id);
+          };
+          item.appendChild(t);
+          item.appendChild(del);
+          item.onclick = () => switchConversation(c.id);
+          listEl.appendChild(item);
+        });
+      }
+
+      function setBusy(b) {
+        busy = b;
+        const send = document.getElementById("send");
+        send.disabled = b;
+        send.classList.toggle("loading", b);
+        send.setAttribute("aria-busy", b ? "true" : "false");
+        document.querySelectorAll(".sc-chip,.sc-cat").forEach((x) => {
+          x.disabled = b;
+        });
+        // the text box stays editable so the keyboard doesn't collapse; sending is blocked while busy
+        if (!b && !window.matchMedia("(pointer:coarse)").matches)
+          document.getElementById("q").focus();
+      }
+      async function getSample() {
+        if (sampleChecked) return sampleNS;
+        sampleChecked = true;
+        try {
+          if (window.claude && window.claude.use) {
+            sampleNS = await window.claude.use("sample");
+          }
+        } catch (e) {
+          sampleNS = null;
+        }
+        return sampleNS;
+      }
+      function addFeedback(row, query) {
+        const wrap = document.createElement("div");
+        wrap.className = "feedback";
+        wrap.innerHTML =
+          '<button class="fb-btn" data-v="copy" aria-label="Copy response" title="Copy">📋</button>' +
+          (query
+            ? '<button class="fb-btn" data-v="regen" aria-label="Regenerate response" title="Regenerate">🔄</button>'
+            : "") +
+          '<button class="fb-btn" data-v="up" aria-label="Helpful answer">👍</button><button class="fb-btn" data-v="down" aria-label="Not helpful">👎</button>';
+        const copyBtn = wrap.querySelector('[data-v="copy"]');
+        copyBtn.onclick = async () => {
+          const text =
+            row && row.querySelector(".msg")
+              ? row.querySelector(".msg").innerText
+              : "";
+          try {
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "✅";
+          } catch (e) {
+            copyBtn.textContent = "⚠️";
+          }
+          setTimeout(() => {
+            copyBtn.textContent = "📋";
+          }, 1300);
+        };
+        const regenBtn = wrap.querySelector('[data-v="regen"]');
+        if (regenBtn) {
+          regenBtn.onclick = async () => {
+            if (busy) return;
+            wrap.remove();
+            setBusy(true);
+            showTyping();
+            try {
+              const sample = await getSample();
+              if (sample) await streamAI(sample, query);
+              else {
+                await new Promise((r) => setTimeout(r, 250));
+                hideTyping();
+                keywordAnswer(query);
+              }
+            } catch (e) {
+              hideTyping();
+              keywordAnswer(query);
+            } finally {
+              setBusy(false);
+            }
+          };
+        }
+        function finish(msg) {
+          const note =
+            wrap.querySelector(".fb-note") ||
+            wrap.appendChild(
+              Object.assign(document.createElement("span"), {
+                className: "fb-note",
+              }),
+            );
+          note.textContent = msg;
+          const r = wrap.querySelector(".fb-reasons");
+          if (r) r.remove();
+        }
+        const up = wrap.querySelector('[data-v="up"]'),
+          down = wrap.querySelector('[data-v="down"]');
+        up.onclick = () => {
+          wrap
+            .querySelectorAll('.fb-btn[data-v="up"],.fb-btn[data-v="down"]')
+            .forEach((x) => x.classList.remove("sel"));
+          up.classList.add("sel");
+          finish("Thanks for the feedback!");
+        };
+        down.onclick = () => {
+          wrap
+            .querySelectorAll('.fb-btn[data-v="up"],.fb-btn[data-v="down"]')
+            .forEach((x) => x.classList.remove("sel"));
+          down.classList.add("sel");
+          if (wrap.querySelector(".fb-reasons")) return;
+          const reasons = document.createElement("div");
+          reasons.className = "fb-reasons";
+          [
+            "Not accurate",
+            "Not helpful",
+            "Outdated",
+            "Missing info",
+            "Other",
+          ].forEach((r) => {
+            const rb = document.createElement("button");
+            rb.className = "fb-reason";
+            rb.textContent = r;
+            rb.onclick = () => finish('Thanks — noted: "' + r + '"');
+            reasons.appendChild(rb);
+          });
+          wrap.appendChild(reasons);
+          log.scrollTop = log.scrollHeight;
+        };
+        log.appendChild(wrap);
+        log.scrollTop = log.scrollHeight;
+      }
+      /* ---- low-token prompt: short persona + only the retrieved chunks + last few turns ---- */
+      const BUDDY_SYSTEM =
+        "You are CAPACITI Buddy, CAPACITI's onboarding and integration assistant: warm, encouraging and clear. You help new candidates understand office rules, policies and expectations without ever sounding punitive or bureaucratic. Explain things simply and stay neutral and respectful across all technical streams.\n" +
+        'RULES: For CAPACITI-specific facts (policies, times, contacts, names, consequences, programme details) use ONLY the CONTEXT below and never guess or invent. If the CONTEXT does not cover it, reply exactly: "I don\'t have enough verified information to answer that confidently." then point them to their manager, coach or Candidate HR (candidatehr@capaciti.org.za). General career, CV, interview, study or workplace-readiness advice may use your general knowledge; for interview practice, mention they can type "mock interview". If someone seems distressed, be kind and mention Mindful Matters or Candidate HR.\n' +
+        'STYLE: friendly, short (under about 120 words unless steps are needed), light markdown only (**bold**, "- " bullets), and never start with "Based on the context".';
+      function clip(s, n) {
+        s = String(s || "")
+          .replace(/\s+/g, " ")
+          .trim();
+        return s.length > n ? s.slice(0, n) + "…" : s;
+      }
+      function recentTurns(userText) {
+        const h = history.slice(),
+          last = h[h.length - 1],
+          prev = h[h.length - 2];
+        if (last && last.who === "user" && last.text === userText) h.pop();
+        else if (
+          last &&
+          last.who === "bot" &&
+          prev &&
+          prev.who === "user" &&
+          prev.text === userText
+        ) {
+          h.pop();
+          h.pop();
+        }
+        return h
+          .slice(-4)
+          .map(
+            (m) =>
+              (m.who === "user" ? "Candidate: " : "Buddy: ") +
+              clip(m.text, 280),
+          )
+          .join("\n");
+      }
+      function buildPrompt(userText, chunks) {
+        const ctx = chunks.length
+          ? chunks
+              .map(
+                (c) =>
+                  "[" + c.category + " › " + c.subCategory + "] " + c.content,
+              )
+              .join("\n")
+          : "(no matching CAPACITI documents found)";
+        const recent = recentTurns(userText);
+        const prompt =
+          BUDDY_SYSTEM +
+          "\n\nCONTEXT:\n" +
+          ctx +
+          "\n\n" +
+          (recent ? "RECENT CHAT:\n" + recent + "\n\n" : "") +
+          "Candidate: " +
+          userText +
+          "\nBuddy:";
+        try {
+          console.info(
+            "[Buddy] prompt ≈ " +
+              Math.ceil(prompt.length / 4) +
+              " tokens · chunks: " +
+              (chunks.map((c) => c.id).join(", ") || "none"),
+          );
+        } catch (e) {}
+        return prompt;
+      }
+      async function streamAI(sample, val) {
+        const chunks = KnowledgeRetriever.retrieve(val, { lastChunks });
+        if (chunks.length)
+          lastChunks = chunks.map(({ id, category, subCategory, content }) => ({
+            id,
+            category,
+            subCategory,
+            content,
+          }));
+        let bubble = null,
+          msgEl = null;
+        const res = await sample(buildPrompt(val, chunks), {
+          modelTier: "quick",
+          cache: false,
+          onText: ({ text }) => {
+            if (!bubble) {
+              hideTyping();
+              bubble = addMsg("", "bot");
+              msgEl = bubble.querySelector(".msg");
+              msgEl.classList.add("streaming");
+            }
+            msgEl.innerHTML = formatRich(text);
+            log.scrollTop = log.scrollHeight;
+          },
+        });
+        const finalText = (res && res.text) || (msgEl ? msgEl.textContent : "");
+        if (!bubble) {
+          hideTyping();
+          bubble = addMsg(finalText, "bot");
+          msgEl = bubble.querySelector(".msg");
+        } else {
+          msgEl.classList.remove("streaming");
+          msgEl.innerHTML = formatRich(finalText);
+        }
+        addFeedback(bubble, val);
+        if (/enough verified information/i.test(finalText))
+          renderEscalation(val);
+        pushHistory("bot", finalText);
+      }
+      function reportMissing(query) {
+        try {
+          const key = "capaciti_buddy_unanswered_v1";
+          const list = JSON.parse(localStorage.getItem(key) || "[]");
+          list.push({
+            q: query || "",
+            when: Date.now(),
+            by: currentEmail || null,
+          });
+          localStorage.setItem(key, JSON.stringify(list.slice(-100)));
+        } catch (e) {}
+        const msg =
+          "Thanks — I've flagged this for the CAPACITI team to review. 🙏";
+        addMsg(msg, "bot");
+        pushHistory("bot", msg);
+      }
+      function renderEscalation(query) {
+        const wrap = document.createElement("div");
+        wrap.className = "suggestions";
+        const actions = [
+          [
+            "📧 Contact Candidate HR",
+            () => {
+              window.location.href =
+                "mailto:candidatehr@capaciti.org.za?subject=" +
+                encodeURIComponent("CAPACITI Buddy query") +
+                "&body=" +
+                encodeURIComponent(query || "");
+            },
+          ],
+          [
+            "💻 Contact IT Support",
+            () => {
+              window.location.href =
+                "mailto:Giles.Moyo@capaciti.org.za?subject=" +
+                encodeURIComponent("CAPACITI Buddy IT query") +
+                "&body=" +
+                encodeURIComponent(query || "");
+            },
+          ],
+          ["🚩 Report missing info", () => reportMissing(query)],
+        ];
+        actions.forEach(([label, fn]) => {
+          const p = document.createElement("button");
+          p.className = "sugg-pill";
+          p.textContent = label;
+          p.onclick = fn;
+          wrap.appendChild(p);
+        });
+        log.appendChild(wrap);
+        log.scrollTop = log.scrollHeight;
+      }
+      /* topic pills: tap to read a chunk directly (no model call, so no credits used) */
+      function renderTopicPills(chunks, lead) {
+        if (!chunks.length) return;
+        const wrap = document.createElement("div");
+        wrap.className = "suggestions";
+        chunks.forEach((c) => {
+          const p = document.createElement("button");
+          p.className = "sugg-pill";
+          p.textContent = c.subCategory;
+          p.onclick = () => askChunk(c.id);
+          wrap.appendChild(p);
+        });
+        log.appendChild(wrap);
+        log.scrollTop = log.scrollHeight;
+      }
+      function askChunk(id) {
+        if (busy) return;
+        const c = KnowledgeRetriever.byId(id);
+        if (!c) return;
+        addMsg(c.subCategory, "user");
+        pushHistory("user", c.subCategory);
+        const row = addMsg(c.content, "bot", c.category);
+        addFeedback(row, null);
+        pushHistory("bot", c.content, c.category);
+        lastChunks = [c];
+      }
+      function showCategoryTopics(cat) {
+        if (busy) return;
+        if (
+          (interviewState && interviewState.active) ||
+          (learningState && learningState.awaitingTopic)
+        ) {
+          const note =
+            "Let's finish what we're doing first — type \"stop\" to leave, then pick a topic. 🙂";
+          addMsg(note, "bot");
+          return;
+        }
+        addMsg(cat, "user");
+        pushHistory("user", cat);
+        const msg =
+          "Here's what I can tell you about " +
+          cat +
+          ". Tap a topic, or just type your own question below.";
+        addMsg(msg, "bot", cat);
+        pushHistory("bot", msg, cat);
+        renderTopicPills(KnowledgeRetriever.topics(cat, 10));
+      }
+      function keywordAnswer(val) {
+        const hits = KnowledgeRetriever.retrieve(val, { lastChunks });
+        let replyText, replyCat, row;
+        if (hits.length) {
+          const top = hits[0];
+          replyCat = top.category;
+          lastChunks = hits.map(({ id, category, subCategory, content }) => ({
+            id,
+            category,
+            subCategory,
+            content,
+          }));
+          replyText = top.followUp
+            ? "Following on from your last question — " + top.content
+            : top.score >= 6
+              ? top.content
+              : "I think this is what you're after — " + top.content;
+          row = addMsg(replyText, "bot", top.category);
+          renderTopicPills(hits.slice(1));
+        } else {
+          replyCat = "Not sure";
+          replyText =
+            "I don't have enough verified information to answer that confidently. Your manager, coach or Candidate HR will know — or I can flag it for the team.";
+          row = addMsg(replyText, "bot", "Not sure");
+          renderEscalation(val);
+        }
+        addFeedback(row, val);
+        pushHistory("bot", replyText, replyCat);
+      }
+      async function runAnswer(val) {
+        setBusy(true);
+        showTyping();
+        try {
+          const sample = await getSample();
+          if (sample) {
+            await streamAI(sample, val);
+          } else {
+            await new Promise((r) => setTimeout(r, 300));
+            hideTyping();
+            keywordAnswer(val);
+          }
+        } catch (err) {
+          hideTyping();
+          keywordAnswer(val);
+        } finally {
+          setBusy(false);
+        }
+      }
+      /* ---- career coach: mock interview flow ---- */
+      let interviewState = null;
+      const INTERVIEW_QUESTIONS = [
+        "Tell me a bit about yourself and why you're interested in tech.",
+        "Describe a time you solved a difficult problem. What was your approach?",
+        "How do you handle working under pressure or tight deadlines?",
+        "What's an area of tech you're most excited to learn more about, and why?",
+        "Where do you see yourself professionally in the next 1–2 years?",
+      ];
+      function startMockInterview() {
+        interviewState = { active: true, qIndex: 0, answers: [] };
+        const intro = `Let's do a quick mock interview 🎤 I'll ask you ${INTERVIEW_QUESTIONS.length} questions, one at a time — just answer naturally in your own words. Type "stop" anytime to end early.`;
+        addMsg(intro, "bot", "Mock Interview");
+        pushHistory("bot", intro, "Mock Interview");
+        askInterviewQuestion();
+      }
+      function askInterviewQuestion() {
+        const q = INTERVIEW_QUESTIONS[interviewState.qIndex];
+        const text = `Question ${interviewState.qIndex + 1} of ${INTERVIEW_QUESTIONS.length}: ${q}`;
+        addMsg(text, "bot", "Mock Interview");
+        pushHistory("bot", text, "Mock Interview");
+      }
+      function handleInterviewAnswer(val) {
+        addMsg(val, "user");
+        pushHistory("user", val);
+        document.getElementById("q").value = "";
+        if (/^(stop|cancel|quit|exit)$/i.test(val)) {
+          interviewState = null;
+          const msg =
+            'No problem — ending the mock interview here. You can start another anytime by typing "mock interview".';
+          addMsg(msg, "bot");
+          pushHistory("bot", msg);
+          return;
+        }
+        interviewState.answers.push({
+          q: INTERVIEW_QUESTIONS[interviewState.qIndex],
+          a: val,
+        });
+        interviewState.qIndex++;
+        setBusy(true);
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          if (
+            interviewState &&
+            interviewState.qIndex < INTERVIEW_QUESTIONS.length
+          ) {
+            askInterviewQuestion();
+            setBusy(false);
+          } else {
+            runInterviewFeedback();
+          }
+        }, 450);
+      }
+      function buildInterviewFeedbackPrompt(answers) {
+        const transcript = answers
+          .map((qa, i) => `Q${i + 1}: ${qa.q}\nA${i + 1}: ${qa.a}`)
+          .join("\n\n");
+        return (
+          "You are a warm, encouraging interview coach helping a CAPACITI tech candidate in South Africa prepare for real interviews. " +
+          'Below is a short mock interview transcript. Give constructive feedback: 2-3 short bullet points on strengths and 1-2 short bullet points on areas to improve, using "- " for each bullet, then one short encouraging closing sentence. ' +
+          "Be specific to their actual answers, not generic filler. Do not invent anything about CAPACITI itself.\n\nTRANSCRIPT:\n" +
+          transcript +
+          "\n\nFeedback:"
+        );
+      }
+      async function runInterviewFeedback() {
+        setBusy(true);
+        showTyping();
+        const answers = interviewState.answers;
+        interviewState = null;
+        let bubble = null,
+          msgEl = null;
+        try {
+          const sample = await getSample();
+          if (sample) {
+            const res = await sample(buildInterviewFeedbackPrompt(answers), {
+              modelTier: "quick",
+              cache: false,
+              onText: ({ text }) => {
+                if (!bubble) {
+                  hideTyping();
+                  bubble = addMsg("", "bot", "Feedback");
+                  msgEl = bubble.querySelector(".msg");
+                  msgEl.classList.add("streaming");
+                }
+                msgEl.innerHTML =
+                  '<span class="cat-tag">Feedback</span><br>' +
+                  formatRich(text);
+              },
+            });
+            const finalText =
+              (res && res.text) || (msgEl ? msgEl.textContent : "");
+            if (!bubble) {
+              hideTyping();
+              bubble = addMsg(finalText, "bot", "Feedback");
+            } else {
+              msgEl.classList.remove("streaming");
+              msgEl.innerHTML =
+                '<span class="cat-tag">Feedback</span><br>' +
+                formatRich(finalText);
+            }
+            pushHistory("bot", finalText, "Feedback");
+          } else {
+            hideTyping();
+            const msg =
+              "Nice work finishing the mock interview! A general tip while I'm offline: structure answers as situation → action → result, keep them under about 90 seconds, and tie things back to why tech excites you.";
+            bubble = addMsg(msg, "bot", "Feedback");
+            pushHistory("bot", msg, "Feedback");
+          }
+        } catch (e) {
+          hideTyping();
+          const msg =
+            "Nice work finishing the mock interview! I couldn't generate personalised feedback just now, but situation → action → result is always a solid structure to lean on.";
+          bubble = addMsg(msg, "bot", "Feedback");
+          pushHistory("bot", msg, "Feedback");
+        } finally {
+          addFeedback(bubble);
+          renderSuggestions([
+            "Start another mock interview",
+            "Help me improve my CV",
+            "What's expected of me as a candidate?",
+          ]);
+          setBusy(false);
+        }
+      }
+      /* ---- learning companion: learn / practise / quiz / explain / study plan ---- */
+      let learningState = null;
+      const LEARNING_MODES = {
+        learn: {
+          icon: "📖",
+          label: "Learn",
+          verb: "learn about",
+          instruction:
+            "Teach the topic clearly for a beginner tech candidate: a short plain-language explanation, then one concrete example. Use headings/bullets only if it genuinely helps — keep it focused, not a textbook chapter.",
+        },
+        practise: {
+          icon: "🛠️",
+          label: "Practise",
+          verb: "practise",
+          instruction:
+            "Give ONE beginner-friendly practical exercise or small task on the topic — do not include the solution. End by inviting them to reply with their attempt so you can give feedback.",
+        },
+        quiz: {
+          icon: "❓",
+          label: "Quiz me",
+          verb: "be quizzed on",
+          instruction:
+            "Write exactly 3 short quiz questions on the topic as a numbered list, suitable for a beginner. Do NOT include the answers.",
+        },
+        explain: {
+          icon: "💡",
+          label: "Explain simply",
+          verb: "have explained simply",
+          instruction:
+            "Explain the topic in the simplest possible terms, as if to someone with zero background, using one short real-world analogy.",
+        },
+        studyplan: {
+          icon: "🗓️",
+          label: "Study plan",
+          verb: "build a study plan for",
+          instruction:
+            "Create a short, realistic one-week study plan for this topic as a numbered day-by-day list, assuming a couple of study hours per day. Keep it practical, not overwhelming.",
+        },
+      };
+      function startLearningMenu() {
+        const msg = "What kind of learning help would you like?";
+        addMsg(msg, "bot");
+        pushHistory("bot", msg);
+        const wrap = document.createElement("div");
+        wrap.className = "suggestions";
+        Object.entries(LEARNING_MODES).forEach(([key, m]) => {
+          const b = document.createElement("button");
+          b.className = "sugg-pill";
+          b.textContent = m.icon + " " + m.label;
+          b.onclick = () => {
+            addMsg(m.icon + " " + m.label, "user");
+            pushHistory("user", m.icon + " " + m.label);
+            askLearningTopic(key);
+          };
+          wrap.appendChild(b);
+        });
+        log.appendChild(wrap);
+        log.scrollTop = log.scrollHeight;
+      }
+      function askLearningTopic(mode) {
+        learningState = { mode, awaitingTopic: true };
+        const msg = `Great — what topic or skill would you like to ${LEARNING_MODES[mode].verb}? (e.g. "SQL joins", "Git branching", "networking basics")`;
+        addMsg(msg, "bot");
+        pushHistory("bot", msg);
+      }
+      async function streamModeResponse(prompt, catLabel, onDone) {
+        setBusy(true);
+        showTyping();
+        try {
+          const sample = await getSample();
+          if (sample) {
+            let bubble = null,
+              msgEl = null;
+            const res = await sample(prompt, {
+              modelTier: "quick",
+              cache: false,
+              onText: ({ text }) => {
+                if (!bubble) {
+                  hideTyping();
+                  bubble = addMsg("", "bot", catLabel);
+                  msgEl = bubble.querySelector(".msg");
+                  msgEl.classList.add("streaming");
+                }
+                msgEl.innerHTML =
+                  '<span class="cat-tag">' +
+                  escapeHtml(catLabel) +
+                  "</span><br>" +
+                  formatRich(text);
+                log.scrollTop = log.scrollHeight;
+              },
+            });
+            const finalText =
+              (res && res.text) || (msgEl ? msgEl.textContent : "");
+            if (!bubble) {
+              hideTyping();
+              bubble = addMsg(finalText, "bot", catLabel);
+            } else {
+              msgEl.classList.remove("streaming");
+              msgEl.innerHTML =
+                '<span class="cat-tag">' +
+                escapeHtml(catLabel) +
+                "</span><br>" +
+                formatRich(finalText);
+            }
+            pushHistory("bot", finalText, catLabel);
+            if (onDone) onDone(finalText);
+          } else {
+            hideTyping();
+            const msg =
+              "I need my AI connection for interactive learning help, and it's offline right now. In the meantime, check the YES app's learning modules or ask your Curriculum Delivery Team for resources on this.";
+            addMsg(msg, "bot");
+            pushHistory("bot", msg);
+          }
+        } catch (e) {
+          hideTyping();
+          const msg =
+            "Sorry, I couldn't generate that just now — please try again in a moment.";
+          addMsg(msg, "bot");
+          pushHistory("bot", msg);
+        } finally {
+          setBusy(false);
+        }
+      }
+      function handleLearningTopic(val) {
+        addMsg(val, "user");
+        pushHistory("user", val);
+        document.getElementById("q").value = "";
+        const mode = learningState.mode,
+          m = LEARNING_MODES[mode];
+        learningState = null;
+        const prompt =
+          "You are CAPACITI Buddy acting as a friendly technical learning companion for a CAPACITI tech candidate in South Africa. " +
+          m.instruction +
+          '\n\nTopic: "' +
+          val +
+          '"\n\nRespond now:';
+        streamModeResponse(prompt, m.label, () => {
+          const wrap = document.createElement("div");
+          wrap.className = "suggestions";
+          const chips = [];
+          if (mode === "quiz")
+            chips.push([
+              "🔑 Show answers",
+              () =>
+                streamModeResponse(
+                  'Provide a short answer key for the quiz questions you just wrote on "' +
+                    val +
+                    '". One line per answer.',
+                  "Answers",
+                ),
+            ]);
+          chips.push(
+            ["🔁 Another topic", () => askLearningTopic(mode)],
+            ["🔀 Different mode", startLearningMenu],
+          );
+          chips.forEach(([label, fn]) => {
+            const b = document.createElement("button");
+            b.className = "sugg-pill";
+            b.textContent = label;
+            b.onclick = fn;
+            wrap.appendChild(b);
+          });
+          log.appendChild(wrap);
+          log.scrollTop = log.scrollHeight;
+        });
+      }
+
+      /* ---- candidate dashboard: my journey ---- */
+      const JOURNEY_STEPS = [
+        { key: "orientation", icon: "🧭", label: "Orientation" },
+        { key: "learning", icon: "📚", label: "Learning" },
+        { key: "assessments", icon: "✅", label: "Assessments" },
+        { key: "cv", icon: "📄", label: "CV" },
+        { key: "interview", icon: "🎤", label: "Interview" },
+        { key: "workplace", icon: "🏢", label: "Workplace" },
+      ];
+      function saveCurrentUserProfile() {
+        if (!currentEmail || !currentUser) return;
+        const users = loadUsers();
+        users[currentEmail] = currentUser;
+        saveUsers(users);
+      }
+      function renderDashboard() {
+        const wrap = document.createElement("div");
+        wrap.className = "dash-wrap";
+        if (!currentUser.stream) {
+          wrap.innerHTML =
+            '<div class="dash-card"><div class="dash-head">Let\'s set up your journey</div><div style="font-size:12.5px;">Which stream are you in? (You can change this anytime.)</div></div>';
+          const row = document.createElement("div");
+          row.className = "suggestions";
+          row.style.paddingLeft = "0";
+          [
+            "Software Development",
+            "Data Engineering",
+            "IT Support",
+            "Network Support",
+          ].forEach((s) => {
+            const b = document.createElement("button");
+            b.className = "sugg-pill";
+            b.textContent = s;
+            b.onclick = () => {
+              currentUser.stream = s;
+              saveCurrentUserProfile();
+              renderDashboard();
+            };
+            row.appendChild(b);
+          });
+          wrap.appendChild(row);
+          log.appendChild(wrap);
+          log.scrollTop = log.scrollHeight;
+          return;
+        }
+        const stepIdx = Math.max(
+          0,
+          JOURNEY_STEPS.findIndex(
+            (s) => s.key === (currentUser.journeyStep || "orientation"),
+          ),
+        );
+
+        const card1 = document.createElement("div");
+        card1.className = "dash-card";
+        card1.innerHTML =
+          '<div class="dash-head">My journey</div>' +
+          '<div style="font-size:13px;"><b>Programme:</b> Demand Academy Programme</div>' +
+          '<div style="font-size:13px;margin-top:2px;"><b>Stream:</b> ' +
+          escapeHtml(currentUser.stream) +
+          ' <button class="linklike" id="changeStreamBtn">change</button></div>';
+        const track = document.createElement("div");
+        track.className = "progress-track";
+        JOURNEY_STEPS.forEach((s, i) => {
+          const node = document.createElement("button");
+          node.className =
+            "progress-node" +
+            (i < stepIdx ? " done" : "") +
+            (i === stepIdx ? " current" : "");
+          node.title = 'Mark "' + s.label + '" as your current step';
+          node.innerHTML =
+            '<span class="progress-dot">' +
+            (i < stepIdx ? "✓" : s.icon) +
+            '</span><span class="progress-label">' +
+            s.label +
+            "</span>";
+          node.onclick = () => {
+            currentUser.journeyStep = s.key;
+            saveCurrentUserProfile();
+            renderDashboard();
+          };
+          track.appendChild(node);
+        });
+        card1.appendChild(track);
+        wrap.appendChild(card1);
+
+        const card2 = document.createElement("div");
+        card2.className = "dash-card";
+        card2.innerHTML = '<div class="dash-head">Next steps</div>';
+        const actions = document.createElement("div");
+        actions.className = "suggestions";
+        actions.style.paddingLeft = "0";
+        [
+          ["📚 Continue learning", () => startLearningMenu()],
+          ["🎤 Prepare for interview", () => startMockInterview()],
+          [
+            "🎓 Review programme requirements",
+            () => {
+              document.getElementById("q").value = "Tell me about my programme";
+              handleSend();
+            },
+          ],
+        ].forEach(([label, fn]) => {
+          const b = document.createElement("button");
+          b.className = "sugg-pill";
+          b.textContent = label;
+          b.onclick = fn;
+          actions.appendChild(b);
+        });
+        card2.appendChild(actions);
+        wrap.appendChild(card2);
+
+        const card3 = document.createElement("div");
+        card3.className = "dash-card";
+        card3.innerHTML =
+          '<div class="dash-head">Important</div><div style="font-size:12.5px;color:var(--muted);">No announcements right now — check back here, or ask your Curriculum Delivery Team for the latest updates.</div>';
+        wrap.appendChild(card3);
+
+        const card4 = document.createElement("div");
+        card4.className = "dash-card";
+        card4.innerHTML = '<div class="dash-head">Support</div>';
+        const sup = document.createElement("div");
+        sup.className = "suggestions";
+        sup.style.paddingLeft = "0";
+        sup.innerHTML =
+          '<a class="sugg-pill" style="text-decoration:none;display:inline-block;" href="mailto:candidatehr@capaciti.org.za">📧 HR</a>' +
+          '<a class="sugg-pill" style="text-decoration:none;display:inline-block;" href="mailto:Giles.Moyo@capaciti.org.za">💻 IT</a>';
+        const wellBtn = document.createElement("button");
+        wellBtn.className = "sugg-pill";
+        wellBtn.textContent = "❤️ Wellness";
+        wellBtn.onclick = () => {
+          document.getElementById("q").value =
+            "What wellness and support resources are available?";
+          handleSend();
+        };
+        sup.appendChild(wellBtn);
+        card4.appendChild(sup);
+        wrap.appendChild(card4);
+
+        log.appendChild(wrap);
+        log.scrollTop = log.scrollHeight;
+        const chg = document.getElementById("changeStreamBtn");
+        if (chg)
+          chg.onclick = () => {
+            currentUser.stream = null;
+            saveCurrentUserProfile();
+            renderDashboard();
+          };
+      }
+
+      function handleSend() {
+        if (busy) return;
+        const input = document.getElementById("q");
+        const val = input.value.trim();
+        if (!val) return;
+        requestAnimationFrame(autosize);
+        if (interviewState && interviewState.active) {
+          handleInterviewAnswer(val);
+          return;
+        }
+        if (learningState && learningState.awaitingTopic) {
+          handleLearningTopic(val);
+          return;
+        }
+        addMsg(val, "user");
+        pushHistory("user", val);
+        input.value = "";
+        if (/mock\s*interview/i.test(val)) {
+          startMockInterview();
+          return;
+        }
+        if (/^learning\s*(mode|companion)$/i.test(val)) {
+          startLearningMenu();
+          return;
+        }
+        const chat = smalltalk(val);
+        if (chat) {
+          setBusy(true);
+          showTyping();
+          setTimeout(() => {
+            hideTyping();
+            addMsg(chat, "bot");
+            pushHistory("bot", chat);
+            setBusy(false);
+          }, 280);
+          return;
+        }
+        runAnswer(val);
+      }
+
+      function initApp() {
+        conversations = loadConversations();
+        if (!conversations.length) {
+          try {
+            const oldRaw = localStorage.getItem("capaciti_buddy_chat_v1");
+            if (oldRaw) {
+              const oldMsgs = JSON.parse(oldRaw);
+              if (oldMsgs && oldMsgs.length) {
+                const firstUser = oldMsgs.find((m) => m.who === "user");
+                conversations.unshift({
+                  id: makeId(),
+                  title: titleFor(firstUser ? firstUser.text : "New chat"),
+                  messages: oldMsgs,
+                  updatedAt: Date.now(),
+                });
+                saveConversations();
+              }
+            }
+            localStorage.removeItem("capaciti_buddy_chat_v1");
+          } catch (e) {}
+        }
+        let restoredActiveId = null;
+        try {
+          restoredActiveId = localStorage.getItem(activeConvIdKey());
+        } catch (e) {}
+        const startConv =
+          conversations.find((c) => c.id === restoredActiveId) ||
+          conversations.slice().sort((a, b) => b.updatedAt - a.updatedAt)[0];
+        if (startConv) {
+          setActiveId(startConv.id);
+          loadConversationIntoView(startConv);
+        } else {
+          const id = makeId();
+          conversations.unshift({
+            id,
+            title: "New chat",
+            messages: [],
+            updatedAt: Date.now(),
+          });
+          saveConversations();
+          setActiveId(id);
+          showGreeting();
+        }
+        renderChatList();
+        updateAccountFooter();
+        updateSigninButton();
+      }
+
+      /* ---- authentication gate: sign in / sign up ---- */
+      function updateAccountFooter() {
+        const el = document.getElementById("accountFooter");
+        if (!el) return;
+        el.innerHTML = currentUser
+          ? `Signed in as <b>${currentUser.name}</b> · <button id="signOutBtn" class="linklike">Sign out</button>`
+          : "";
+        const so = document.getElementById("signOutBtn");
+        if (so) so.onclick = signOut;
+      }
+      function signOut() {
+        try {
+          localStorage.removeItem(AUTH_KEY);
+        } catch (e) {}
+        location.reload();
+      }
+      function showAuthGate(prefillEmail) {
+        document.getElementById("authOverlay").classList.add("open");
+        if (prefillEmail)
+          document.getElementById("siEmail").value = prefillEmail;
+        document.getElementById("q").disabled = true;
+        document.getElementById("send").disabled = true;
+      }
+      function hideAuthGate() {
+        document.getElementById("authOverlay").classList.remove("open");
+        document.getElementById("q").disabled = false;
+        document.getElementById("send").disabled = false; // was never re-enabled after sign-in
+        if (!window.matchMedia("(pointer:coarse)").matches)
+          document.getElementById("q").focus();
+      }
+      function markInvalid(el, bad) {
+        el.classList.toggle("invalid", !!bad);
+        el.setAttribute("aria-invalid", bad ? "true" : "false");
+      }
+      function clearInvalid(...els) {
+        els.forEach((el) => markInvalid(el, false));
+      }
+      function setAuthTab(tab) {
+        document
+          .querySelectorAll(".auth-tab")
+          .forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+        document.getElementById("signupForm").style.display =
+          tab === "signup" ? "flex" : "none";
+        document.getElementById("signinForm").style.display =
+          tab === "signin" ? "flex" : "none";
+        document.getElementById("authError").textContent = "";
+        clearInvalid(
+          document.getElementById("suName"),
+          document.getElementById("suEmail"),
+          document.getElementById("siEmail"),
+        );
+      }
+      document.querySelectorAll(".auth-tab").forEach((b) => {
+        b.onclick = () => setAuthTab(b.dataset.tab);
+      });
+      function completeAuth(email, user) {
+        currentEmail = email;
+        currentUser = user;
+        try {
+          localStorage.setItem(AUTH_KEY, email);
+        } catch (e) {}
+        hideAuthGate();
+        initApp();
+      }
+      function doSignup() {
+        const nameEl = document.getElementById("suName"),
+          emailEl = document.getElementById("suEmail");
+        const name = nameEl.value.trim(),
+          email = emailEl.value.trim().toLowerCase();
+        const err = document.getElementById("authError");
+        clearInvalid(nameEl, emailEl);
+        err.textContent = "";
+        if (!name || name.length < 2) {
+          err.textContent = "Please enter your full name.";
+          markInvalid(nameEl, true);
+          nameEl.focus();
+          return;
+        }
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          err.textContent = "Please enter a valid email address.";
+          markInvalid(emailEl, true);
+          emailEl.focus();
+          return;
+        }
+        const users = loadUsers();
+        if (users[email]) {
+          err.textContent =
+            "That email is already registered — try Sign In instead.";
+          markInvalid(emailEl, true);
+          setAuthTab("signin");
+          document.getElementById("siEmail").value = email;
+          return;
+        }
+        const user = { name, email, joinedAt: Date.now() };
+        users[email] = user;
+        saveUsers(users);
+        completeAuth(email, user);
+      }
+      function doSignin() {
+        const emailEl = document.getElementById("siEmail");
+        const email = emailEl.value.trim().toLowerCase();
+        const err = document.getElementById("authError");
+        clearInvalid(emailEl);
+        err.textContent = "";
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          err.textContent = "Please enter a valid email address.";
+          markInvalid(emailEl, true);
+          emailEl.focus();
+          return;
+        }
+        const users = loadUsers();
+        const user = users[email];
+        if (!user) {
+          err.textContent =
+            "We couldn't find that account — please sign up instead.";
+          markInvalid(emailEl, true);
+          setAuthTab("signup");
+          document.getElementById("suEmail").value = email;
+          return;
+        }
+        completeAuth(email, user);
+      }
+      document.getElementById("signupBtn").onclick = doSignup;
+      document.getElementById("signinBtnAuth").onclick = doSignin;
+      document.getElementById("suName").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doSignup();
+      });
+      document.getElementById("suEmail").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doSignup();
+      });
+      document.getElementById("siEmail").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doSignin();
+      });
+
+      /* ---- optional shortcuts (prompt chips + category pills) ---- */
+      (function buildShortcuts() {
+        const chips = [
+          "Help me prepare for my interview",
+          "Explain my learning journey",
+          "What is the dress code?",
+          "Who do I contact about my stipend?",
+        ];
+        const cats = [
+          ["House Rules", "📋"],
+          ["Disciplinary", "⚖️"],
+          ["Programme & YES", "🎓"],
+          ["Contacts & Support", "📞"],
+          ["Career", "💼"],
+          ["OHS & Safety", "🦺"],
+        ];
+        const cr = document.getElementById("promptChips"),
+          pr = document.getElementById("catPills");
+        chips.forEach((t) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "sc-chip";
+          b.textContent = t;
+          b.onclick = () => {
+            if (busy) return;
+            qEl.value = t;
+            handleSend();
+          };
+          cr.appendChild(b);
+        });
+        cats.forEach(([c, icon]) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "sc-cat";
+          b.textContent = icon + " " + c;
+          b.onclick = () => showCategoryTopics(c);
+          pr.appendChild(b);
+        });
+      })();
+
+      /* ---- keep the input visible when a mobile keyboard opens ---- */
+      (function viewportGuard() {
+        const root = document.documentElement,
+          vv = window.visualViewport;
+        function sync() {
+          const h = vv ? vv.height : window.innerHeight;
+          root.style.setProperty("--app-h", Math.round(h) + "px");
+          root.style.setProperty(
+            "--app-top",
+            Math.round(vv ? vv.offsetTop : 0) + "px",
+          );
+          const kb =
+            !!vv &&
+            window.innerHeight - vv.height > 120 &&
+            window.innerWidth < 900;
+          const was = root.classList.contains("kbd-open");
+          root.classList.toggle("kbd-open", kb);
+          if (kb || was) log.scrollTop = log.scrollHeight;
+        }
+        if (vv) {
+          vv.addEventListener("resize", sync);
+          vv.addEventListener("scroll", sync);
+        }
+        window.addEventListener("resize", sync);
+        window.addEventListener("orientationchange", sync);
+        qEl.addEventListener("focus", () => {
+          setTimeout(sync, 150);
+          setTimeout(sync, 450);
+        });
+        qEl.addEventListener("blur", () => setTimeout(sync, 150));
+        sync();
+      })();
+
+      /* ---- boot: check for an existing session, otherwise show the gate ---- */
+      (function boot() {
+        let savedEmail = null;
+        try {
+          savedEmail = localStorage.getItem(AUTH_KEY);
+        } catch (e) {}
+        const users = loadUsers();
+        if (savedEmail && users[savedEmail]) {
+          currentEmail = savedEmail;
+          currentUser = users[savedEmail];
+          initApp();
+        } else {
+          showAuthGate();
+        }
+      })();
+    </script>
+  </body>
+</html>
