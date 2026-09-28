@@ -3716,8 +3716,6 @@
         // ("and the men?") that matches nothing on its own reuses the chunks from the previous answer.
         function retrieve(query, opts) {
           const hits = run(query);
-          console.log("QUERY:", query);
-          console.log("RETRIEVER HITS:", hits);
           if (
             !hits.length &&
             opts &&
